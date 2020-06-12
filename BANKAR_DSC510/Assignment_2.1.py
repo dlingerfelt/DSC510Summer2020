@@ -1,11 +1,15 @@
-'''
+#DSC 510
+#Week 2
+#Programming Assignment Week 2
+#Author Dhiraj Bankar
+#06/12/2020
+
+"""
 Fiber Optic Cable installation receipt Generator
 Purpose of Program: Generate a automated receipt for fiber optic cable installation program by getting input
                     from user for company name and how much fiber optic cable to be installed,calculate total
                     installation cost and generate receipt for user
-Assignment Number : 2.1 Programming Assignment
-Name : Dhiraj Bankar
-'''
+"""
 
 # Define global variable for fiber optic installation cost
 fixed_price = 0.87
