@@ -3,10 +3,6 @@
 
 
 def temp_recorder():
-    print()
-    print("Welcome to the temperature recorder!")
-    print("Input a numeric value below.")
-    print("Type 'quit' to exit the program")
     temp = []
     while True:
         user_input = input("Please input a temperature: ")
@@ -23,4 +19,13 @@ def temp_recorder():
 
 
 if __name__ == "__main__":
+    print()
+    print("Welcome to the temperature recorder!")
+    print("Input a numeric value below.")
+    print("Type 'quit' to exit the program")
     temp_recorder()
+    again = input("Would you like to run the program again?: ")
+    while again.lower()[0] == "y":
+        temp_recorder()
+        again = input("Would you like to run the program again?: ")
+    print("Goodbye!")
