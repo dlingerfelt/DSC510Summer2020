@@ -4,6 +4,13 @@
 #Sarah Holdman
 #06/12/20
 
+#This program will do the following:
+#Display a welcome message
+#Retrieve the company name
+#Retrieve the number of feet of cable needed
+#Calculate the cost of installation
+#Print a receipt
+
 #Welcome user and retrieve company name
 company = input('Welcome! Which company are you shopping for?\n')
 #Ask for the number of feet needed
