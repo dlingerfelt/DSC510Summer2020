@@ -1,6 +1,8 @@
-# Assignment 5.1
-# Michael Hotaling
-
+# DSC 510
+# Week 5
+# Programming Assignment Week 5
+# Author: Michael Hotaling
+# 06/12/2020
 
 # One thing I'd like to bring up is that according to PEP8, we shouldn't name
 # functions with camelCase. We should just underscores instead
