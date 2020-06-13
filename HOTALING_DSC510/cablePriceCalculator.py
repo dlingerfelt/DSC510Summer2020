@@ -1,12 +1,10 @@
-# Programming Assignment
-# 2.1 Michael Hotaling
-# This programm will: 1) Welcome the user 2) Retrieve the company name
-# from the user 3) Retrieve the number of feet of fiber optic cable to be installed from the user 4) Calculate the
-# installation cost of fiber optic cable by multiplying the total cost as the number of feet times $0.87. 5) Print a
-# receipt for the user including: the Company Name,  the number of feet of fiber optic cable to be installed,
-# the calculated cost, and the total cost
+# DSC 510
+# Week 2
+# Programming Assignment Week 2
+# Author: Michael Hotaling
+# 06/11/2020
 
-# Defining a Gloabl Variable for the price of fiber in case it ever changes
+# Defining a Global Variable for the price of fiber in case it ever changes
 fiberPrice = 0.87
 
 # Introdution
@@ -30,6 +28,6 @@ print()
 # Printing the reciept
 print("--" + company + " Cable Company--")
 print("--Fiber Optic Receipt--")
-print("-Feet of Cable: " + str(fiberLength) + "-")
-print("-Price per Foot: $" + str(fiberPrice) + "-")
-print("-Total Cost: $" + str(fiberLength * fiberPrice) + "-")
+print("--Feet of Cable: " + str(fiberLength) + "--")
+print("--Price per Foot: $" + str(fiberPrice) + "--")
+print("--Total Cost: $" + str(fiberLength * fiberPrice) + "--")

@@ -1,8 +1,10 @@
-# Assignment 5.1
-# Michael Hotaling
+# DSC 510
+# Week 5
+# Programming Assignment Week 5
+# Author: Michael Hotaling
+# 06/12/2020
 
-
-# One thing I'd like to bring us is that according to PEP8, we shouldn't name
+# One thing I'd like to bring up is that according to PEP8, we shouldn't name
 # functions with camelCase. We should just underscores instead
 
 def performCalculation(operator):
@@ -76,18 +78,18 @@ def main():
         print("Enter 1 for numerical operations")
         print("Enter 2 to calculate an average")
         print("Enter 3 to exit the program")
-        request = int(input("What would you like to do?: "))
+        request = input("What would you like to do?: ")
 
         # Error handling if the inputs aren't valid
-        if request not in [1, 2, 3]:
+        if request not in ["1", "2", "3"]:
             print("Oops! That's an invalid request. Please try again!")
             print()
         # Operation request
-        elif request == 1:
+        elif request == '1':
             performCalculation(input("Please enter an operator sign: "))
             print()
         # Average request
-        elif request == 2:
+        elif request == '2':
             calculateAverage()
             print()
         # Exit request
