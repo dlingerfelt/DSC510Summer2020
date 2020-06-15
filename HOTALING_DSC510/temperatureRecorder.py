@@ -4,6 +4,7 @@
 # Author: Michael Hotaling
 # 06/15/2020
 
+
 def median(numbers):
     # This function will find the median value in a list
     # We will first sort the list from lowest to highest and find the length of the list
@@ -12,13 +13,14 @@ def median(numbers):
     numbers = sorted(numbers)
     length = len(numbers)
     if length % 2 == 0:
-        median1 = numbers[length//2]
-        median2 = numbers[length//2 - 1]
-        median = (median1 + median2)/2
-        return(median)
+        med1 = numbers[length//2]
+        med2 = numbers[length//2 - 1]
+        med = (med1 + med2)/2
+        return(med)
     else:
-        median = numbers[int(length/2)]
-        return (median)
+        med = numbers[int(length/2)]
+        return(med)
+
 
 def temp_recorder():
     # This function records the entries from the user by appending an empty list.
@@ -44,13 +46,12 @@ def temp_recorder():
         print("The minimum temperature is " + str(min(temp)))
         print("The number of measurement inputs is " + str(len(temp)))
         print("The average value of measurement inputs is " + str(sum(temp)/len(temp)))
-        print("The median value of the measurement inputs is "+ str((median(temp))))
+        print("The median value of the measurement inputs is " + str((median(temp))))
 
     except:
         print("Something went wrong!")
         print("Did you forget to input a temperature? ")
         print("Please try again!")
-
 
 
 # Here, we will call the program with the __main__ statement.
