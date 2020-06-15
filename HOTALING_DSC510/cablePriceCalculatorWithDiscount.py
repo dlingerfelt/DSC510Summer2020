@@ -43,6 +43,7 @@ print()
 # Printing the receipt
 print("--" + company + " Cable Company--")
 print("--Fiber Optic Receipt--")
-print("-Feet of Cable: " + str(fiberLength) + "-")
-print("-Price per Foot: $" + str(float(fiberPrice)) + "-")
-print("-Total Cost: $" + str(round(fiberPrice * fiberLength, 2)) + "-")
+print("--Feet of Cable: " + str(fiberLength) + "--")
+print("--Price per Foot: $" + str(fiberPrice) + "--")
+print("--Total Cost: $" + str(fiberLength * fiberPrice) + "--")
+
