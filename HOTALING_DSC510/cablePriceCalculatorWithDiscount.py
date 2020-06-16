@@ -32,11 +32,10 @@ if fiberPrice != 0.87:
     print("Good news! You're eligible for our bulk discount!")
 
 # We will need to round the total price to prevent float issues
-print('You will need ' + str(fiberLength) + " feet of fiber optic cable! That will cost you $" +
-      str(round(fiberPrice * fiberLength, 2)))
+print('You will need ' + str(fiberLength) + " feet of fiber optic cable! That will cost you " +
+      (f'${fiberPrice * fiberLength:,.2f}'.replace('$-', '-$')))
 
 # Some print statements to create some room between the chat and the receipt
-print()
 print()
 
 # Printing the receipt
