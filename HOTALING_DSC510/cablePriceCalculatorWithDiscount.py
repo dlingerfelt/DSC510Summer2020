@@ -14,8 +14,15 @@ company = input('Which company are you from?: ')
 print("Okay! You are from " + str(company) + ". That's great to hear!")
 
 # Asking the user how many feet of cable they will need for their job
-# There is no error handling here, so if a string is passed, it will break the program
-fiberLength = float(input('How many feet of fiber optic cable is required?: '))
+# Check to see if the amount is the correct data type. If not, it will abort the program
+try:
+    fiberLength = float(input('How many feet of fiber optic cable is required?: '))
+except ValueError:
+    print("Oops! Please put in a numerical value!")
+    exit()
+else:
+    print("I have no idea what you did. Please try again!")
+    exit()
 
 # We will check for the price per length of cable here
 # If the user requests more than a certain amount of cable, they will get a discount
