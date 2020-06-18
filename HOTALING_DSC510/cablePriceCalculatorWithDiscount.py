@@ -20,9 +20,6 @@ try:
 except ValueError:
     print("Oops! Please put in a numerical value!")
     exit()
-else:
-    print("I have no idea what you did. Please try again!")
-    exit()
 
 # We will check for the price per length of cable here
 # If the user requests more than a certain amount of cable, they will get a discount
