@@ -16,20 +16,20 @@ company = input('Welcome! Which company are you shopping for?\n')
 
 #Tell the customer about possible discounts
 print('Bulk discount can apply to your order')
-print('500+ feet is $0.50/foot')
-print('250-499 feet is $0.70/foot')
-print('100-249 feet is $0.80/foot')
-print('Under 100 feet is $0.87/foot')
+print('501+ feet is $0.50/foot')
+print('251-500 feet is $0.70/foot')
+print('101-250 feet is $0.80/foot')
+print('0-100 feet is $0.87/foot')
 
 #Retrieve the number of feet desired
 feet = float(input('How many feet of fiber optic cable do you need?\n'))
 
 #Create variable for prices
-if feet >= 500:
+if feet >= 501:
     price = 0.50
-elif feet >= 250:
+elif feet >= 251:
     price = 0.70
-elif feet >= 100:
+elif feet >= 101:
     price = 0.80
 else:
     price = 0.87
