@@ -4,21 +4,20 @@
 # Author: Michael Hotaling
 # 06/12/2020
 
-# One thing I'd like to bring up is that according to PEP8, we shouldn't name
-# functions with camelCase. We should just underscores instead
+# One thing I'd like to bring up is that according to PEP8,
+# Function names should be lowercase, with words separated by underscores as necessary to improve readability.
 
 def performCalculation(operator):
     # This function takes in an operator value and will perform a numeric
     # operation with two number inputs. We handle errors by checking if the operator
     # is valid by checking if it's in the list below
-
     if operator not in ['+', '-', '*', 'x', 'X', '/']:
         print('Unknown Operator. Please try again')
         print()
         return
     # Request two numbers from the user to perform the operation on
     a = float(input("Enter First Number: "))
-    b = float(input("Enter Second Numer: "))
+    b = float(input("Enter Second Number: "))
 
     # Addition operation
     if operator == "+":
