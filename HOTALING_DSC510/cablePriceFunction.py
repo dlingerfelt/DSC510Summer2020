@@ -28,7 +28,8 @@ def regular_price():
 def bill(feet, price):
     # Bill calculator. This function multiplies the amount of feet by the price of the cable per foot to get the
     # total price
-    return feet * price
+    price = feet * price
+    return price
 
 
 def input_cable_length():
@@ -82,9 +83,8 @@ def main():
     elif fiber_length == 0:
         print("Don't need any cable today? That's okay! We are always open! ")
     else:
-        print('You will need {0} feet of fiber optic cable! That will cost you ${1}'.format(str(fiber_length), (
-            f'${total_cost:,.2f}'.replace('$-', '-$'))))
-
+        print('You will need ' + str(fiber_length) + " feet of fiber optic cable! That will cost you " +
+              f'${total_cost:,.2f}'.replace('$-', '-$'))
     # Some print statements to create some room between the chat and the receipt
     print()
 
