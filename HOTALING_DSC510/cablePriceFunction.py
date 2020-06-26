@@ -5,6 +5,12 @@
 # 06/25/2020
 
 
+def regular_price():
+    # We can declare the standard price here so we can call it later when checking how much money the user saved
+    # This can be helpful if the standard price ever changes or if we need to raise prices in the future
+    return 0.87
+
+
 def price_calculation(feet):
     # Price Calculation. This function checks to see if the user is eligible for a bulk discount
     # We have three different discounts, > 500ft, >250ft and >100ft
@@ -16,13 +22,7 @@ def price_calculation(feet):
     elif abs(feet) > 100:
         return 0.80
     else:
-        return 0.87
-
-
-def regular_price():
-    # We can declare the standard price here so we can call it later when checking how much money the user saved
-    # This can be helpful if the standard price ever changes or if we need to raise prices in the future
-    return 0.87
+        return regular_price()
 
 
 def bill(feet, price):

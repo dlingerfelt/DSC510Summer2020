@@ -16,10 +16,10 @@ def median(numbers):
         med1 = numbers[length//2]
         med2 = numbers[length//2 - 1]
         med = (med1 + med2)/2
-        return(med)
+        return med
     else:
-        med = numbers[int(length/2)]
-        return(med)
+        med = numbers[(length//2)]
+        return med
 
 
 def temp_recorder():
@@ -37,7 +37,7 @@ def temp_recorder():
         try:
             temp.append(float(user_input))
         except:
-            print("Invalid Entry: Please Try Again!")
+            print("Invalid entry: Please try again!")
     print()
     # Here we will print out the results of the list.
     # If the list is empty, or something else went wrong, it will print the except statement.
@@ -46,7 +46,7 @@ def temp_recorder():
         print("The minimum temperature is " + str(min(temp)))
         print("The number of measurement inputs is " + str(len(temp)))
         print("The average value of measurement inputs is " + str(sum(temp)/len(temp)))
-        print("The median value of the measurement inputs is " + str((median(temp))))
+        print("The median value of the measurement inputs is " + str(median(temp)))
 
     except:
         print("Something went wrong!")
@@ -54,19 +54,28 @@ def temp_recorder():
         print("Please try again!")
 
 
-# Here, we will call the program with the __main__ statement.
-# We will greet the user and print the instructions on how to use the program
-if __name__ == "__main__":
+def main():
     print()
     print("Welcome to the temperature recorder!")
     print("Input a numeric value below.")
     print("Type 'quit' to exit the program")
+    print()
     temp_recorder()
+    print()
 
     # I wanted the program to recursively ask the user if they want to run the program again, but I can't figure out
     # a good way to do that. This is what I came up with
     again = input("Would you like to run the program again?: ")
+    print()
     while again.lower()[0] == "y":
         temp_recorder()
+        print()
         again = input("Would you like to run the program again?: ")
+        print()
     print("Goodbye!")
+
+
+# Here, we will call the program with the __main__ statement.
+# We will greet the user and print the instructions on how to use the program
+if __name__ == "__main__":
+    main()
