@@ -61,13 +61,35 @@ def covariance(numbers_x, numbers_y, p=False):
     if p:
         cov = sum(lst_xy) / (len(numbers_x))
     else:
-        cov = sum(lst_xy) / (len(numbers_x)-1)
+        cov = sum(lst_xy) / (len(numbers_x) - 1)
     return cov
 
 
 def correlation(numbers_x, numbers_y):
+    # Population Correlation Coefficient
     corr = covariance(numbers_x, numbers_y, p=True) / (standard_deviation(numbers_x) * standard_deviation(y))
     return corr
+
+
+def pearson_correlation(numbers_x, numbers_y):
+    # Pearson Correlation Coefficient
+    n = len(numbers_x)
+    lst_xy = []
+    lst_xx = []
+    lst_yy = []
+    for i in range(0, len(numbers_x)):
+        lst_xy.append(numbers_x[i] * numbers_y[i])
+    for j in numbers_x:
+        lst_xx.append(j * j)
+    for k in numbers_y:
+        lst_yy.append(k * k)
+    sum_xx = sum(lst_xx)
+    sum_yy = sum(lst_yy)
+    sum_xy = sum(lst_xy)
+
+    pearson = ((n * sum_xy) - (sum(numbers_x) * sum(numbers_y)) / \
+               (square_root(((n * sum_xx) - sum(numbers_x) ** 2) * (n * sum_yy - sum(numbers_y) ** 2))))
+    return pearson
 
 
 def square_root(number):
@@ -122,9 +144,11 @@ def factorial(number):
 
 
 if __name__ == "__main__":
-    x = [1692, 1978, 1884, 2151, 2519]
-    y = [68, 102, 110, 112, 154]
+    # x = [1692, 1978, 1884, 2151, 2519]
+    # y = [68, 102, 110, 112, 154]
     lst = [1, 5, 7, 22, 94, -59, 0, 2, 5, 7, 88, 49, 51]
+    x = [43, 21, 25, 42, 57, 59]
+    y = [99, 65, 79, 75, 87, 81]
     print("The mean is " + str(mean(lst)))
     print("The median is " + str(median(lst)))
     print("The variance is " + str(variance(lst)))
@@ -134,3 +158,4 @@ if __name__ == "__main__":
     print(covariance(x, y))
     print(covariance(x, y, p=True))
     print(correlation(x, y))
+    print(pearson_correlation(x, y))
