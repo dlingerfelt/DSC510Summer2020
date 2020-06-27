@@ -2,7 +2,7 @@
 # Week 6
 # Programming Assignment Week 6
 # Author: Michael Hotaling
-# 06/15/2020
+# 06/27/2020
 
 
 def median(numbers):
