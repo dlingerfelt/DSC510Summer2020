@@ -36,7 +36,7 @@ def temp_recorder():
         # This is error handling just in case the user tries to input an invalid data type
         try:
             temp.append(float(user_input))
-        except:
+        except ValueError:
             print("Invalid entry: Please try again!")
     print()
     # Here we will print out the results of the list.
@@ -48,7 +48,7 @@ def temp_recorder():
         print("The average value of measurement inputs is " + str(sum(temp)/len(temp)))
         print("The median value of the measurement inputs is " + str(median(temp)))
 
-    except:
+    except ValueError:
         print("Something went wrong!")
         print("Did you forget to input a temperature? ")
         print("Please try again!")

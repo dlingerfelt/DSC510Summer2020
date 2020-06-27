@@ -2,7 +2,7 @@
 # Week 4
 # BlackBoard Post 4.2: Interests
 # Author: Michael Hotaling
-# 06/26/2020
+# 06/27/2020
 
 
 def mean(numbers):
@@ -45,6 +45,31 @@ def variance(numbers):
     return mean(var_list)
 
 
+def covariance(numbers_x, numbers_y, p=False):
+    # Covariance calculates the relationship between two sets of numbers. THe
+    mean_x = mean(numbers_x)
+    mean_y = mean(numbers_y)
+    lst_x = []
+    lst_y = []
+    lst_xy = []
+    for i in numbers_x:
+        lst_x.append(i - mean_x)
+    for j in numbers_y:
+        lst_y.append(j - mean_y)
+    for k in range(0, len(numbers_x)):
+        lst_xy.append(lst_x[k] * lst_y[k])
+    if p:
+        cov = sum(lst_xy) / (len(numbers_x))
+    else:
+        cov = sum(lst_xy) / (len(numbers_x)-1)
+    return cov
+
+
+def correlation(numbers_x, numbers_y):
+    corr = covariance(numbers_x, numbers_y, p=True) / (standard_deviation(numbers_x) * standard_deviation(y))
+    return corr
+
+
 def square_root(number):
     # https://www.cse.wustl.edu/~cytron/101Pages/f08/Notes/SquareRoot/sqrt.html
     # https://en.wikipedia.org/wiki/Methods_of_computing_square_roots
@@ -75,10 +100,37 @@ def standard_deviation(numbers):
     return square_root(variance(numbers))
 
 
-if __name__ == "__main__":
+def factorial(number):
+    intnumber = number
+    if intnumber != int(number):
+        raise TypeError("Factorial calculations require integer values")
+    elif number == 0:
+        return 1
+    elif number > 0:
+        x = 1
+        while number != 1:
+            x *= number
+            number -= 1
+        return int(x)
+    else:
+        number = abs(number)
+        x = 1
+        while number != 1:
+            x *= number
+            number -= 1
+        return int(-x)
 
+
+if __name__ == "__main__":
+    x = [1692, 1978, 1884, 2151, 2519]
+    y = [68, 102, 110, 112, 154]
     lst = [1, 5, 7, 22, 94, -59, 0, 2, 5, 7, 88, 49, 51]
     print("The mean is " + str(mean(lst)))
     print("The median is " + str(median(lst)))
     print("The variance is " + str(variance(lst)))
     print("The standard deviation is " + str(standard_deviation(lst)))
+    print("10! is " + str(factorial(float(-5))))
+    print("sqrt of 5 is " + str(square_root(-5)))
+    print(covariance(x, y))
+    print(covariance(x, y, p=True))
+    print(correlation(x, y))
