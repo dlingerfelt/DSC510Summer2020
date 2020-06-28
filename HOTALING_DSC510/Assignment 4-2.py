@@ -2,7 +2,7 @@
 # Week 4
 # BlackBoard Post 4.2: Interests
 # Author: Michael Hotaling
-# 06/27/2020
+# 06/28/2020
 
 
 def mean(numbers):
@@ -46,7 +46,10 @@ def variance(numbers):
 
 
 def covariance(numbers_x, numbers_y, p=False):
-    # Covariance calculates the relationship between two sets of numbers. THe
+    # Covariance calculates the relationship between two sets of numbers. There are two methods to calculate
+    # covarience. One is using the population statistics and one is using a sample size. Since sample sizes are more
+    # more common, I added an argument and set the default value to being False. If the population is true, the user
+    # can add another argument "p = True"
     mean_x = mean(numbers_x)
     mean_y = mean(numbers_y)
     lst_x = []
@@ -67,7 +70,7 @@ def covariance(numbers_x, numbers_y, p=False):
 
 def correlation(numbers_x, numbers_y):
     # Population Correlation Coefficient
-    corr = covariance(numbers_x, numbers_y, p=True) / (standard_deviation(numbers_x) * standard_deviation(y))
+    corr = covariance(numbers_x, numbers_y, p=True) / (standard_deviation(numbers_x) * standard_deviation(numbers_y))
     return corr
 
 
@@ -83,12 +86,14 @@ def pearson_correlation(numbers_x, numbers_y):
         lst_xx.append(j * j)
     for k in numbers_y:
         lst_yy.append(k * k)
+    sum_x = sum(numbers_x)
+    sum_y = sum(numbers_y)
     sum_xx = sum(lst_xx)
     sum_yy = sum(lst_yy)
     sum_xy = sum(lst_xy)
-
-    pearson = ((n * sum_xy) - (sum(numbers_x) * sum(numbers_y)) / \
-               (square_root(((n * sum_xx) - sum(numbers_x) ** 2) * (n * sum_yy - sum(numbers_y) ** 2))))
+    numerator = (n * sum_xy) - (sum_x * sum_y)
+    denominator = (((n * sum_xx) - (sum_x * sum_x)) * ((n * sum_yy) - (sum_y * sum_y))) ** 0.5
+    pearson = numerator / denominator
     return pearson
 
 
@@ -144,18 +149,26 @@ def factorial(number):
 
 
 if __name__ == "__main__":
+    # I used data from
+    # https://www.statisticshowto.com/probability-and-statistics/correlation-coefficient-formula/#Pearson
+    # to verify that the calculations were correct
     # x = [1692, 1978, 1884, 2151, 2519]
     # y = [68, 102, 110, 112, 154]
     lst = [1, 5, 7, 22, 94, -59, 0, 2, 5, 7, 88, 49, 51]
     x = [43, 21, 25, 42, 57, 59]
     y = [99, 65, 79, 75, 87, 81]
+    number = 8
     print("The mean is " + str(mean(lst)))
     print("The median is " + str(median(lst)))
     print("The variance is " + str(variance(lst)))
     print("The standard deviation is " + str(standard_deviation(lst)))
-    print("10! is " + str(factorial(float(-5))))
-    print("sqrt of 5 is " + str(square_root(-5)))
-    print(covariance(x, y))
-    print(covariance(x, y, p=True))
-    print(correlation(x, y))
-    print(pearson_correlation(x, y))
+    print(str(number) + "! is " + str(factorial(float(number))))
+    print("sqrt of " + str(number) + " is " + str(square_root(number)))
+    print("sqrt of " + str(number) + " using ** 0.5 is " + str(number ** 0.5))
+    print("The difference between them is " + str(square_root(number) - number ** 0.5))
+    print("Sample covarience is " + str(covariance(x, y)))
+    print("Population covariance is " + str(covariance(x, y, p=True)))
+    print("Correlation is " + str(correlation(x, y)))
+    print("Pearson is " + str(pearson_correlation(x, y)))
+    print(x)
+    print(y)
