@@ -88,6 +88,7 @@ def main():
         print("Enter 1 for numerical operations")
         print("Enter 2 to calculate an average")
         print("Enter 3 to exit the program")
+
         request = input("What would you like to do?: ")
 
         # Error handling if the inputs aren't valid
