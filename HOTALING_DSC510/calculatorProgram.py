@@ -2,7 +2,7 @@
 # Week 5
 # Programming Assignment Week 5
 # Author: Michael Hotaling
-# 06/29/2020
+# 07/02/2020
 
 # One thing I'd like to bring up is that according to PEP8,
 # Function names should be lowercase, with words separated by underscores as necessary to improve readability.
@@ -13,7 +13,9 @@ def performCalculation(operator):
     This function takes in an operator value and will perform a numeric
     operation with two number inputs. We can handle errors by checking if the operator
     is valid by checking if it's in the list below
+    hello
      """
+
     if operator not in ['+', '-', '*', 'x', 'X', '/']:
         print('Unknown operator. Please try again.')
         return
@@ -97,7 +99,8 @@ def main():
             print()
         # Operation request
         elif request == '1':
-            performCalculation(input("Please enter an operator sign: "))
+            performCalculation(input("Valid inputs are:\n Addition: + \n Subtraction: -\n Multiplication: * or x\n "
+                                     "Division: /\n Please enter an operator sign: "))
             print()
         # Average request
         elif request == '2':
