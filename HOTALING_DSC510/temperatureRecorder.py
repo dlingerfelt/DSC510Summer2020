@@ -62,16 +62,16 @@ def pretty_format(temp_list):
 
 def main():
     # We will greet the user and print the instructions on how to use the program
-    temps =[]
+    temps = []
     print()
     print("Welcome to the temperature recorder!")
     print("Input a numeric value below.")
     print("Type 'quit' to exit the program")
-    print()
     # We will use a while loop to ask the user if they want to run the program again
     # We also added a neat little feature by asking the user if they want to continue where they left off
     # That way, they don't have to worry about accidentally inputting the sentinel value and losing their data
     while True:
+        print()
         temps = temp_recorder(temps)
         pretty_format(temps)
         print()
@@ -83,6 +83,7 @@ def main():
         if user_continue.lower()[0] != "y":
             # This line resets the temp values
             temps = []
+            print("List erased! Starting over!")
     print("Goodbye!")
     exit()
 
