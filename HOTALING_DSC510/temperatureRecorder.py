@@ -2,10 +2,11 @@
 # Week 6
 # Programming Assignment Week 6
 # Author: Michael Hotaling
-# 06/27/2020
+# 07/06/2020
 
 
 def median(numbers):
+    # Added this for fun
     # This function will find the median value in a list
     # We will first sort the list from lowest to highest and find the length of the list
     # If the list length is even, we will need to use floor division to find the two middle values and average them
@@ -13,12 +14,12 @@ def median(numbers):
     numbers = sorted(numbers)
     length = len(numbers)
     if length % 2 == 0:
-        med1 = numbers[length//2]
-        med2 = numbers[length//2 - 1]
-        med = (med1 + med2)/2
+        med1 = numbers[length // 2]
+        med2 = numbers[length // 2 - 1]
+        med = (med1 + med2) / 2
         return med
     else:
-        med = numbers[(length//2)]
+        med = numbers[(length // 2)]
         return med
 
 
@@ -30,10 +31,11 @@ def temp_recorder():
     while True:
         # This while loop will continuously ask for inputs until the user inputs "quit"
         # quit can be in any format since we check to see if the lower case values are equal to the sentinel string
-        user_input = input("Please input a temperature: ")
+        user_input = input("Please input temperature number " + str(len(temp) + 1) + ": ")
         if user_input.lower() == "quit":
             break
-        # This is error handling just in case the user tries to input an invalid data type
+        # This is error handling just in case the user tries to input an invalid data type. Since this is a while
+        # loop, the user has the opportunity to try and input another value without the program crashing
         try:
             temp.append(float(user_input))
         except ValueError:
@@ -45,7 +47,7 @@ def temp_recorder():
         print("The maximum temperature is " + str(max(temp)))
         print("The minimum temperature is " + str(min(temp)))
         print("The number of measurement inputs is " + str(len(temp)))
-        print("The average value of measurement inputs is " + str(sum(temp)/len(temp)))
+        print("The average value of measurement inputs is " + str(sum(temp) / len(temp)))
         print("The median value of the measurement inputs is " + str(median(temp)))
 
     except ValueError:
@@ -55,27 +57,22 @@ def temp_recorder():
 
 
 def main():
+    # We will greet the user and print the instructions on how to use the program
     print()
     print("Welcome to the temperature recorder!")
     print("Input a numeric value below.")
     print("Type 'quit' to exit the program")
     print()
-    temp_recorder()
-    print()
-
-    # I wanted the program to recursively ask the user if they want to run the program again, but I can't figure out
-    # a good way to do that. This is what I came up with
-    again = input("Would you like to run the program again?: ")
-    print()
-    while again.lower()[0] == "y":
+    while True:
         temp_recorder()
         print()
-        again = input("Would you like to run the program again?: ")
-        print()
+        again = input("Would you like to run the program again? [y/n]:  ")
+        if again.lower()[0] != "y":
+            break
     print("Goodbye!")
+    exit()
 
 
 # Here, we will call the program with the __main__ statement.
-# We will greet the user and print the instructions on how to use the program
 if __name__ == "__main__":
     main()
