@@ -5,7 +5,7 @@
 # range of this program, we will run into issues. ie 116.
 singles_and_teens = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven",
                      "twelve",
-                     "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+                     "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",""]
 
 # Second digit lists
 tens = ["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
@@ -13,12 +13,18 @@ tens = ["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "nin
 # We don't need a hundred list technically. We should be able to check the length of the number. If it is 3, we can pull
 # The first digit, index the singles list, and add "hundred" to the string. The rest is self explanatory.
 
+hundreds_and_beyond = ["", "", "hundred", "thousand", "thousand", " hundred thousand", "million"]
+
 # Testing the program
-for i in range(1, 101):
-    # len(str(i))
+for i in range(1, 1000):
     if i <= 19:
         print(singles_and_teens[i])
     elif 20 <= i <= 99:
         print(str(tens[int(str(i)[0]) - 2]) + " " + str(singles_and_teens[int(str(i)[1])]))
+    elif len(str(i)) == 3 and str(i)[1:] == "00":
+        print(str(singles_and_teens[int(str(i)[0])]) + " hundred")
+    elif len(str(i)) == 3 and str(i)[1] == "0" or str(i)[1] == "1":
+        print(str(singles_and_teens[int(str(i)[0])]) + " hundred and " + str(singles_and_teens[int(str(i)[1:])]))
     else:
-        print("Didn't program that in yet!")
+        print(str(singles_and_teens[int(str(i)[0])]) + " hundred and " + str(tens[int(str(i)[1]) - 2]) + " " + str(singles_and_teens[int(str(i)[2])]))
+
