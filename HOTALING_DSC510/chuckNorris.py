@@ -1,55 +1,81 @@
 # DSC 510
-# Week 89
+# Week 9
 # Programming Assignment Week 9
 # Author: Michael Hotaling
 # 07/06/2020
 
 
 import requests
-import time
-from requests import HTTPError
 
 
-def chuck_norris_joke():
+def chuck_norris_joke(category):
     try:
-        # I'm going to request jokes based on dev humour since some of the jokes not in this category are very explicit
-        response = requests.get('https://api.chucknorris.io/jokes/random?category=dev', verify=False)  # My SSL
+        # response = requests.get('https://api.chucknorris.io/jokes/random?category=dev', verify=False)  # My SSL
         # certificates are all messed up so I need to disable verification
-        json_response = response.json()
+        if category == "random":
+            api_response = requests.get('https://api.chucknorris.io/jokes/random', verify=False)
+        else:
+            api_response = requests.get('https://api.chucknorris.io/jokes/random?category=' + category, verify=False)
+        json_response = api_response.json()
         return json_response.get('value')
-    except HTTPError:
+    except requests.HTTPError:
         return "An HTTP Error has occurred. Please try again later."
 
 
-def print_joke(number_of_jokes):
-    try:
-        joke_counter = int(number_of_jokes)
-        for i in range(1, joke_counter + 1):
-            # Made some nice formatting
-            print(str(i) + ") " + chuck_norris_joke())
-            # Added a 1 second wait time to prevent getting blocked by the website
-            time.sleep(1)
-    except ValueError:
-        print("Invalid number. Please try again (or don't.)")
+def joke_selector():
+    # This function returns the category of joke the user wants to select.
+    # I am literally terrible at using dictionaries, so I decided to use two different lists instead.
+    # This is terrible.
+    categories = requests.get('https://api.chucknorris.io/jokes/categories', verify=False).json()
+    category_numbers = 1
+    category_number_list = []
+    print("Here are the categories:")
+    print("-" * 24)
+    for category in list(categories):
+        print("{0:>2}) {1}{2}".format(category_numbers, category.upper()[0], category[1::]))
+        category_number_list.append(str(category_numbers))
+        category_numbers += 1
+    print("{0:>2}) {1}".format(category_numbers, "Random"))
+    categories.append("random")
+    category_number_list.append(str(category_numbers))
+    print("-" * 24)
+    # print(categories)
+    # print(category_number_list)
+    while True:
+        joke_selection = input("What kind of joke would you like to hear?: ")
+        if joke_selection.lower() in categories:
+            return joke_selection.lower()
+        elif joke_selection in category_number_list:
+            return categories[int(joke_selection)-1]
+        else:
+            print("Invalid request: Please try again!")
 
 
 def main():
-    print("Welcome to the Chuck Norris Joke Machine: circa 2005....")
-    print("Hope you haven't set your expectations too high...")
+    print("Welcome to the Chuck Norris Joke Machine")
+    x = 1
+    z = 0
+    while True:
+        category = joke_selector()
+        while True:
+            try:
+                y = int(input("How many jokes would you like to hear?: "))
+                z = z + y
+                break
+            except ValueError as error:
+                print(error)
+                print("Please input a positive integer value")
 
-    try:
-        number_of_jokes = int(input("How many bad jokes do you want? (0 is the recommended option:) "))
-    except ValueError:
-        print("Invalid Entry: Please try again.")
-        exit()
-    if number_of_jokes < 1:
-        print("Good choice")
-        exit()
-    print("Suit yourself...")
-    print()
-    print_joke(number_of_jokes)
-    print()
-    print("You sat through " + str(number_of_jokes) + " Chuck Norris joke(s) ")
+        print("-"*40)
+        while x <= z:
+            print("{:>3}) {}".format(x, chuck_norris_joke(category)))
+            x += 1
+        print("-" * 40)
+        if input("Would you like to see more jokes? [y/n]: ").lower() == "y":
+            continue
+        else:
+            print("Goodbye!")
+            exit()
 
 
 if __name__ == "__main__":
