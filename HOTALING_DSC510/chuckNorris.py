@@ -2,7 +2,7 @@
 # Week 9
 # Programming Assignment Week 9
 # Author: Michael Hotaling
-# 07/06/2020
+# 07/24/2020
 
 
 import requests
