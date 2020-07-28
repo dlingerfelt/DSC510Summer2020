@@ -61,7 +61,7 @@ def get_weather_data(query, config):
 def display_results(weathers, weather_data):
     # try-except block
     try:
-        # Looping the weathers list of JSON objects to print the weather details for the selected Range
+        # Looping the weathers list of JSON objects to print the weather details for the selected range
         if weather_data == "2":
             print("Location : " + (weathers['city']['name']))
             print("-" * len("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
@@ -115,24 +115,29 @@ def display_results(weathers, weather_data):
 
 
 def main():
+    # try-except block
     try:
         # Fetching Default Parameter Country as US and Units - Imperial from configuration file
         config = get_config()
         units = config.units
         country = config.country
         language = config.language
+        api_key = config.api_key
         counter = 1
         now = datetime.datetime.now()
+        print()
         print("Welcome to the Weather App")
         print("Today is {0}".format(now.strftime("%A, %B %d, %Y")))
         print("The Time is currently {0}".format(now.strftime("%I:%M%p")))
         print("-" * 30)
         while True:
-            user_selection = input("Please select an option:\n "
+            print()
+            user_selection = input("Main Menu:\n "
                                    "1: Pull the current weather for a city or ZIP code\n "
                                    "2: Pull forecast data for a city or ZIP code\n "
-                                   "3: Edit Configuration\n "
-                                   "4: Exit\n")
+                                   "3: Edit configuration\n "
+                                   "4: Exit\n"
+                                   "Please input a selection: ")
             if user_selection in ["1", "2"]:
                 if user_selection == "1":
                     weather_option = "weather"
@@ -142,18 +147,50 @@ def main():
                 location = input("Please input a city name or ZIP code: ")
 
                 if location.isdigit(): # If it is a ZIP code
-                    # TODO // Gotta make this cleaner
-                    query = weather_option + '?zip=' + location + "," + country + "&" + "units=" + units + "&" + "lang=" + language + "&cnt=" + str(
-                        counter)
-                else:
-                    query = weather_option + '?q=' + location + "," + country + "&" + "units=" + units + "&" + "lang=" + language + "&cnt=" + str(
-                        counter)
+                    query = "{}?zip={},{}&units={}&lang={}&cnt={}"\
+                        .format(weather_option, location, country, units, language, counter)
+
+                else:  # If it is a city name
+                    query = "{}?q={},{}&units={}&lang={}&cnt={}"\
+                        .format(weather_option, location, country, units, language, counter)
                 weather_data = get_weather_data(query, config)
                 display_results(weather_data, str(user_selection))
 
             elif user_selection == "3":
+                # TODO // Make a better config editor
                 # Open and edit the config file
-                print("Oops! Not available yet!")
+                make_change = input("Configuration: \n 1: units: ({0}) \n 2: country: ({1})\n 3: language: "
+                                    "({2})\n 4: API Key: {3}\n Please select the config you wish to change: ".format(units, country, language, api_key))
+                if make_change == "1":
+                    temp_setting = input("Please select either F or C: ")
+                    if temp_setting.lower() == "f":
+                        units = "imperial"
+                    elif temp_setting.lower() == "c":
+                        units = "metric"
+
+                elif make_change == "2":
+                    country = input("Please select a country using a two character country code: ").upper()
+
+                elif make_change == "3":
+                    # https://openweathermap.org/current#multi
+                    language = input("Please select a language using a two character language code: ").upper()
+
+                elif make_change == "4":
+                    api_key = input("Please enter a new API key: ")
+
+                else:
+                    continue
+                if input("Would you like to save your setting changes to the config?: [y/n]").lower() == "y":
+                    config_file = open("config.ini", "w")
+                    config_file.write("[openweathermap]\n")
+                    config_file.write("api_key={}\n".format(api_key))
+                    config_file.write("units={}\n".format(units))
+                    config_file.write("country={}\n".format(country))
+                    config_file.write("language={}\n".format(language))
+                    config_file.write("base_url=http://api.openweathermap.org/data/2.5/")
+                    config_file.close()
+                    print("Settings written to config.txt")
+                    print()
 
             elif user_selection == "4":
                 print("Goodbye!")
@@ -162,8 +199,10 @@ def main():
             else:
                 print("Invalid Request: Please try again")
 
-    except ValueError or HTTPError:
-        print("oops")
+    except ValueError:
+        raise ValueError
+    except SyntaxError:
+        raise SyntaxError
 
 
 if __name__ == '__main__':
