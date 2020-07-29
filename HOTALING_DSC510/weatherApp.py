@@ -2,7 +2,7 @@
 # Week 10
 # Programming Assignment Week 10: Final Project
 # Author: Michael Hotaling
-# 07/28/2020
+# 07/29/2020
 
 
 import requests
@@ -11,7 +11,7 @@ import configparser
 from requests.exceptions import HTTPError
 
 
-# Class to represent config values ( api_key, units, country, language, base URl )
+# Class to represent config values (api_key, units, country, language, base URl)
 class Config:
     def __init__(self, api_key, units, country, language, base_url):
         self.api_key = api_key
@@ -46,15 +46,16 @@ def get_weather_data(query, config):
         # This returns an HTTPError if an error occurred during the retrieval process
         response.raise_for_status()
         # if status code 200 is successfully received the data from API
-        if response.status_code != 200:
-            print(HTTPError)
+        if response.status_code == 200:
+            print("API Request Successful")
+            return response.json()
         # convert response details into json response as JSON format
-        return response.json()
+
     # Exception Handling
-    except HTTPError as http_err:
-        print(f'An HTTP error has occurred: {http_err}')
-    except Exception as err:
-        print(f'Another error has occurred: {err}')
+    except HTTPError:
+        print("Unable to find data.")
+    except Exception as error:
+        print(error)
 
 
 # function to display results from Json
@@ -62,56 +63,61 @@ def display_results(weathers, weather_data):
     # try-except block
     try:
         # Looping the weathers list of JSON objects to print the weather details for the selected range
+        header_block = "| {0:<21} | {1:>8} | {2:>11} | {3:>8} | {4:>8} | {5:>8} |  {6:>9} | {7:<15} | {8:<25} |" \
+                       " {9:>10} | {10:>15} |   {11:>15} |" \
+            .format('Date', 'Temp', 'Feels Like', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Weather',
+                    'Description', 'Wind Speed', 'Wind Direction', 'Cloud Coverage')
+
         if weather_data == "2":
-            print("Location : " + (weathers['city']['name']))
-            print("-" * len("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                            .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description',
-                                    'Wind Speed', 'Wind Direction')))
-            print("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                  .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description', 'Wind Speed',
-                          'Wind Direction'))
-            print("-" * len("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                            .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description',
-                                    'Wind Speed', 'Wind Direction')))
+            print("Location : " + (weathers['city']['name']) + ", " + (weathers['city']['country']))
+            print("-" * len(header_block))
+            print(header_block)
+            print("-" * len(header_block))
             for i in weathers['list']:
                 print(
-                    "| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                        .format(i["dt_txt"], i["main"]["temp"], i["main"]["temp_min"], i["main"]["temp_max"],
-                                i['main']['pressure'], i['main']['humidity'], i['weather'][0]['description'],
-                                i['wind']['speed'], i['wind']['deg']))
-            print("-" * len("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                            .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description',
-                                    'Wind Speed', 'Wind Direction')))
+                    "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} |"
+                    " {8:<25} | {9:>10.2f} | {10:>15} |  {11:>15}% |".format(
+                                i["dt_txt"],  # 0
+                                i["main"]["temp"],  # 1
+                                i['main']['feels_like'],  # 2
+                                i["main"]["temp_min"],  # 3
+                                i["main"]["temp_max"],  # 4
+                                i['main']['pressure'],  # 5
+                                i['main']['humidity'],  # 6
+                                i['weather'][0]['main'],  # 7
+                                i['weather'][0]['description'],  # 8
+                                i['wind']['speed'],  # 9
+                                i['wind']['deg'],  # 10
+                                i['clouds']['all']))  # 11
+            print("-" * len(header_block))
         # Current Weather details
         elif weather_data == "1":
             print("Location : " + (weathers['name']))
-            print("-" * len("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                            .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description',
-                                    'Wind Speed', 'Wind Direction')))
-            print("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                  .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description', 'Wind Speed',
-                          'Wind Direction'))
-            print("-" * len("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                            .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description',
-                                    'Wind Speed', 'Wind Direction')))
+            print("-" * len(header_block))
+            print(header_block)
+            print("-" * len(header_block))
             print(
-                "| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                    .format(str(datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
+                "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} | {8:<25} |"
+                " {9:>10.2f} | {10:>15} |  {11:>15}% |".format(str(
+                            datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
                             weathers['main']['temp'],
+                            weathers['main']['feels_like'],
                             weathers["main"]["temp_min"],
                             weathers["main"]["temp_max"],
                             weathers['main']['pressure'],
                             weathers['main']['humidity'],
+                            weathers['weather'][0]['main'],
                             weathers['weather'][0]['description'],
                             weathers['wind']['speed'],
-                            weathers['wind']['deg']))
-            print("-" * len("| {:<21} | {:>8} | {:>8} | {:>8} | {:>8} | {:>9} | {:<25} | {:>10} | {:>15} |"
-                            .format('Date', 'Temp', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Description',
-                                    'Wind Speed', 'Wind Direction')))
+                            weathers['wind']['deg'],
+                            weathers['clouds']['all']))
+            print("-" * len(header_block))
         else:
             print("Invalid Entry")
     except HTTPError:
         print("Unable to get weather information for the input city/zip-code. Please try again!")
+    except Exception as err:
+        print("Please try again!")
 
 
 def main():
@@ -146,12 +152,12 @@ def main():
                     weather_option = "forecast"
                 location = input("Please input a city name or ZIP code: ")
 
-                if location.isdigit(): # If it is a ZIP code
-                    query = "{}?zip={},{}&units={}&lang={}&cnt={}"\
+                if location.isdigit() and len(location) == 5:  # If it is a ZIP code
+                    query = "{}?zip={},{}&units={}&lang={}&cnt={}" \
                         .format(weather_option, location, country, units, language, counter)
 
                 else:  # If it is a city name
-                    query = "{}?q={},{}&units={}&lang={}&cnt={}"\
+                    query = "{}?q={},{}&units={}&lang={}&cnt={}" \
                         .format(weather_option, location, country, units, language, counter)
                 weather_data = get_weather_data(query, config)
                 display_results(weather_data, str(user_selection))
@@ -159,8 +165,10 @@ def main():
             elif user_selection == "3":
                 # TODO // Make a better config editor
                 # Open and edit the config file
+                print()
                 make_change = input("Configuration: \n 1: units: ({0}) \n 2: country: ({1})\n 3: language: "
-                                    "({2})\n 4: API Key: {3}\n Please select the config you wish to change: ".format(units, country, language, api_key))
+                                    "({2})\n 4: API Key: ({3})\n Please select the config you wish to change: "
+                                    .format(units, country, language, api_key))
                 if make_change == "1":
                     temp_setting = input("Please select either F or C: ")
                     if temp_setting.lower() == "f":
@@ -176,21 +184,21 @@ def main():
                     language = input("Please select a language using a two character language code: ").upper()
 
                 elif make_change == "4":
+                    print("You will need to save and restart for the change to take effect")
                     api_key = input("Please enter a new API key: ")
 
                 else:
                     continue
-                if input("Would you like to save your setting changes to the config?: [y/n]").lower() == "y":
-                    config_file = open("config.ini", "w")
-                    config_file.write("[openweathermap]\n")
-                    config_file.write("api_key={}\n".format(api_key))
-                    config_file.write("units={}\n".format(units))
-                    config_file.write("country={}\n".format(country))
-                    config_file.write("language={}\n".format(language))
-                    config_file.write("base_url=http://api.openweathermap.org/data/2.5/")
-                    config_file.close()
-                    print("Settings written to config.txt")
-                    print()
+                config_file = open("config.ini", "w")
+                config_file.write("[openweathermap]\n")
+                config_file.write("api_key={}\n".format(api_key))
+                config_file.write("units={}\n".format(units))
+                config_file.write("country={}\n".format(country))
+                config_file.write("language={}\n".format(language))
+                config_file.write("base_url=http://api.openweathermap.org/data/2.5/")
+                config_file.close()
+                print("Settings written to config.txt")
+                config = get_config()
 
             elif user_selection == "4":
                 print("Goodbye!")
