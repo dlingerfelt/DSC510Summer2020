@@ -2,7 +2,7 @@
 # Week 9
 # Programming Assignment Week 9
 # Author: Michael Hotaling
-# 07/28/2020
+# 07/29/2020
 
 
 import requests
@@ -44,9 +44,12 @@ def joke_selector(categories):
         category_numbers += 1
 
     # Random is also a category, but it isn't listed in the list. So let's just add it.
-    print(" {0:>2} - {1}".format(category_numbers, "Random"))
-    categories.append("random")
-    category_number_list.append(str(category_numbers))
+    # This was previously running each time the list was pulled, so I set it up to check whether or not random is
+    # already in the list
+    if 'random' not in categories:
+        print(" {0:>2} - {1}".format(category_numbers, "Random"))
+        categories.append("random")
+        category_number_list.append(str(category_numbers))
     print("-" * 49)
     # print(categories)
     # print(category_number_list)
@@ -88,7 +91,7 @@ def main():
                 if y <= 0:
                     print("Please input a positive integer value")
                     continue
-                elif y > 99:
+                elif y > 999:
                     print("That's too many jokes! \nPlease pick a smaller number!")
                     continue
                 z = z + y
