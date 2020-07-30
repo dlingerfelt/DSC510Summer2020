@@ -44,11 +44,18 @@ def get_weather_data(query, config):
         response = requests.get(complete_url)
 
         # This returns an HTTPError if an error occurred during the retrieval process
-        response.raise_for_status()
+        # TODO // Enable this back eventually
+        # response.raise_for_status()
+
         # if status code 200 is successfully received the data from API
+        print("Response status code:" + str(response.status_code))
         if response.status_code == 200:
             print("API Request Successful")
             return response.json()
+        elif response.status_code == 404:
+            print("Unable to find location: Please try again")
+        elif response.status_code == 401:
+            print("Invalid API Key. Please update your API key.")
         # convert response details into json response as JSON format
 
     # Exception Handling
@@ -92,7 +99,7 @@ def display_results(weathers, weather_data):
             print("-" * len(header_block))
         # Current Weather details
         elif weather_data == "1":
-            print("Location : " + (weathers['name']))
+            print("Location : " + (weathers['name']) + ", " + (weathers['sys']['country']))
             print("-" * len(header_block))
             print(header_block)
             print("-" * len(header_block))
@@ -116,7 +123,7 @@ def display_results(weathers, weather_data):
             print("Invalid Entry")
     except HTTPError:
         print("Unable to get weather information for the input city/zip-code. Please try again!")
-    except Exception as err:
+    except:
         print("Please try again!")
 
 
@@ -177,15 +184,18 @@ def main():
                         units = "metric"
 
                 elif make_change == "2":
-                    country = input("Please select a country using a two character country code: ").upper()
+                    country = input("Please select a country using a two character country code: ").upper()[0:2]
 
                 elif make_change == "3":
                     # https://openweathermap.org/current#multi
-                    language = input("Please select a language using a two character language code: ").upper()
+                    language = input("Please select a language using a two character language code: ").upper()[0:2]
 
                 elif make_change == "4":
-                    print("You will need to save and restart for the change to take effect")
-                    api_key = input("Please enter a new API key: ")
+                    api_key_new = input("Please enter a new API key: ")
+                    if len(api_key_new) == len(api_key):
+                        api_key = api_key_new
+                    else:
+                        print("The entered API key doesn't seem to be correct. Reverting to old API key.")
 
                 else:
                     continue
