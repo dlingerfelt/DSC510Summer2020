@@ -52,15 +52,21 @@ def get_weather_data(query, config):
         if response.status_code == 200:
             print("API Request Successful")
             return response.json()
+        elif response.status_code == 400:
+            print("Syntax Error!")
+        # if status code 404 is received from the API
         elif response.status_code == 404:
             print("Unable to find location: Please try again")
+        # if status code 401 is received from the API
         elif response.status_code == 401:
             print("Invalid API Key. Please update your API key.")
+        elif response.status_code == 429:
+            print("Your account is temporary blocked due to exceeding of requests limitation of your subscription type")
         # convert response details into json response as JSON format
 
     # Exception Handling
-    except HTTPError:
-        print("Unable to find data.")
+    except HTTPError as httperror:
+        print(httperror)
     except Exception as error:
         print(error)
 
@@ -170,7 +176,7 @@ def main():
                 display_results(weather_data, str(user_selection))
 
             elif user_selection == "3":
-                # TODO // Make a better config editor
+                # TODO // Make a better config editor and make it it's own function
                 # Open and edit the config file
                 print()
                 make_change = input("Configuration: \n 1: units: ({0}) \n 2: country: ({1})\n 3: language: "
@@ -184,7 +190,11 @@ def main():
                         units = "metric"
 
                 elif make_change == "2":
-                    country = input("Please select a country using a two character country code: ").upper()[0:2]
+                    new_country = input("Please select a country using a two character country code: ").upper()[0:2]
+                    if new_country not in ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BQ', 'BA', 'BW', 'BV', 'BR', 'IO', 'BN', 'BG', 'BF', 'BI', 'CV', 'KH', 'CM', 'CA', 'KY', 'CF', 'TD', 'CL', 'CN', 'CX', 'CC', 'CO', 'KM', 'CD', 'CG', 'CK', 'CR', 'HR', 'CU', 'CW', 'CY', 'CZ', 'CI', 'DK', 'DJ', 'DM', 'DO', 'EC', 'EG', 'SV', 'GQ', 'ER', 'EE', 'SZ', 'ET', 'FK', 'FO', 'FJ', 'FI', 'FR', 'GF', 'PF', 'TF', 'GA', 'GM', 'GE', 'DE', 'GH', 'GI', 'GR', 'GL', 'GD', 'GP', 'GU', 'GT', 'GG', 'GN', 'GW', 'GY', 'HT', 'HM', 'VA', 'HN', 'HK', 'HU', 'IS', 'IN', 'ID', 'IR', 'IQ', 'IE', 'IM', 'IL', 'IT', 'JM', 'JP', 'JE', 'JO', 'KZ', 'KE', 'KI', 'KP', 'KR', 'KW', 'KG', 'LA', 'LV', 'LB', 'LS', 'LR', 'LY', 'LI', 'LT', 'LU', 'MO', 'MG', 'MW', 'MY', 'MV', 'ML', 'MT', 'MH', 'MQ', 'MR', 'MU', 'YT', 'MX', 'FM', 'MD', 'MC', 'MN', 'ME', 'MS', 'MA', 'MZ', 'MM', 'NA', 'NR', 'NP', 'NL', 'NC', 'NZ', 'NI', 'NE', 'NG', 'NU', 'NF', 'MP', 'NO', 'OM', 'PK', 'PW', 'PS', 'PA', 'PG', 'PY', 'PE', 'PH', 'PN', 'PL', 'PT', 'PR', 'QA', 'MK', 'RO', 'RU', 'RW', 'RE', 'BL', 'SH', 'KN', 'LC', 'MF', 'PM', 'VC', 'WS', 'SM', 'ST', 'SA', 'SN', 'RS', 'SC', 'SL', 'SG', 'SX', 'SK', 'SI', 'SB', 'SO', 'ZA', 'GS', 'SS', 'ES', 'LK', 'SD', 'SR', 'SJ', 'SE', 'CH', 'SY', 'TW', 'TJ', 'TZ', 'TH', 'TL', 'TG', 'TK', 'TO', 'TT', 'TN', 'TR', 'TM', 'TC', 'TV', 'UG', 'UA', 'AE', 'GB', 'UM', 'US', 'UY', 'UZ', 'VU', 'VE', 'VN', 'VG', 'VI', 'WF', 'EH', 'YE', 'ZM', 'ZW', 'AX']:
+                        print("Country not found!")
+                    else:
+                        country = new_country
 
                 elif make_change == "3":
                     # https://openweathermap.org/current#multi
@@ -192,23 +202,32 @@ def main():
 
                 elif make_change == "4":
                     api_key_new = input("Please enter a new API key: ")
-                    if len(api_key_new) == len(api_key):
+                    complete_url = "{}weather?zip={},{}&appid={}".format(config.base_url, "11210", "US", api_key_new)
+                    response = requests.get(complete_url)
+                    if response.status_code == 200:
+                        print("Successfully connected to the API")
                         api_key = api_key_new
-                    else:
-                        print("The entered API key doesn't seem to be correct. Reverting to old API key.")
+                    elif response.status_code == 401:
+                        print("Invalid API key. Please try again!")
 
                 else:
                     continue
-                config_file = open("config.ini", "w")
-                config_file.write("[openweathermap]\n")
-                config_file.write("api_key={}\n".format(api_key))
-                config_file.write("units={}\n".format(units))
-                config_file.write("country={}\n".format(country))
-                config_file.write("language={}\n".format(language))
-                config_file.write("base_url=http://api.openweathermap.org/data/2.5/")
-                config_file.close()
-                print("Settings written to config.txt")
-                config = get_config()
+                if language == config.language \
+                        and country == config.country \
+                        and units == config.units \
+                        and api_key == config.api_key:
+                    pass
+                else:
+                    config_file = open("config.ini", "w")
+                    config_file.write("[openweathermap]\n")
+                    config_file.write("api_key={}\n".format(api_key))
+                    config_file.write("units={}\n".format(units))
+                    config_file.write("country={}\n".format(country))
+                    config_file.write("language={}\n".format(language))
+                    config_file.write("base_url=http://api.openweathermap.org/data/2.5/")
+                    config_file.close()
+                    "Configuration Saved!"
+                    config = get_config()
 
             elif user_selection == "4":
                 print("Goodbye!")
