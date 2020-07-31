@@ -2,7 +2,7 @@
 # Week 10
 # Programming Assignment Week 10: Final Project
 # Author: Michael Hotaling
-# 07/29/2020
+# 07/31/2020
 
 
 import requests
@@ -183,11 +183,13 @@ def main():
                                     "({2})\n 4: API Key: ({3})\n Please select the config you wish to change: "
                                     .format(units, country, language, api_key))
                 if make_change == "1":
-                    temp_setting = input("Please select either F or C: ")
+                    temp_setting = input("Please select either F, C, or K: ")
                     if temp_setting.lower() == "f":
                         units = "imperial"
                     elif temp_setting.lower() == "c":
                         units = "metric"
+                    elif temp_setting.lower() == "k":
+                        units = 'kelvin'
 
                 elif make_change == "2":
                     new_country = input("Please select a country using a two character country code: ").upper()[0:2]
