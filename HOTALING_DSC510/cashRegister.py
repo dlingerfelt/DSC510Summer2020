@@ -77,16 +77,17 @@ class CashRegister(object):
 def main():
     register = CashRegister()
     while True:
-        item = input("Item: ")
+        item = input("Item Name: ")
         quantity = float(input("Quantity: "))  # Changed this to float since some things are measured by weight
-        value = float(input("Value: "))
+        value = float(input("Value of Item: "))
         register.add_item(item, quantity, value)
-        keep_going = input("Keep going?: ").lower()
+        keep_going = input("Continue? [y/n]: ").lower()
         if keep_going == "n":
             print()
             register.printout()
             default = sys.stdout
-            receipt_printout = open("receipt.txt", "w")
+            receipt_name = "{}.txt".format(datetime.datetime.now().strftime("%Y%M%dT%H%M%S"))
+            receipt_printout = open(receipt_name, "w")
             sys.stdout = default
             payment_amount = float(input("| Payment Amount:                   $"))
             print("| {0:<20}{1:>20} |".format("Change:", Money(register.payment(payment_amount), "USD").format('en_US')))
@@ -98,7 +99,7 @@ def main():
             print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
             sys.stdout = default
             receipt_printout.close()
-            webbrowser.open("receipt.txt")
+            webbrowser.open(receipt_name)
             break
 
 
