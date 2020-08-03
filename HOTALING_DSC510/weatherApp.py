@@ -150,7 +150,7 @@ def config_editor(make_change):
         else:
             print("Invalid Entry")
 
-    elif make_change == "2":1
+    elif make_change == "2":
         new_country = input("Please select a country using a two character country code: ").upper()[0:2]
         if new_country not in ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ',
                                'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BQ', 'BA', 'BW', 'BV',
