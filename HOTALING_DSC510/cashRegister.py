@@ -6,7 +6,9 @@
 
 
 import datetime
-
+import sys
+import webbrowser
+from money import Money
 
 # This is definitely a stupid way to do this, but it'll work for now
 # Let me see if I can add all this info to a dictionary instead. Maybe I can figure out how ot use 3 key values?
@@ -19,7 +21,7 @@ class CashRegister(object):
         self.price = []
         self.total_price = []
         self.amount = 0
-        self.sales_tax = 0.08
+        self.sales_tax = 0.0825
 
     def add_item(self, item, quantity, value):
         self.thing.append(item)
@@ -37,30 +39,39 @@ class CashRegister(object):
         return self.sales_tax
 
     def payment(self, payment_amount):
-        self.amount = payment_amount - (sum(self.total_price) + (sum(self.total_price) * self.sales_tax))
+        self.amount = payment_amount - (sum(self.total_price) * (1 + self.sales_tax))
         return self.amount
 
     def printout(self):
-        print("Receipt")
-        date = datetime.datetime.now()
-        print(str(date))
-        print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
-        print("| {:<40} |  \n| {:<10} | {:<10}  | {:<12}  |".format("Item", "Quantity", "Price/Item", "Price"))
-        print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
+        print("=" * len("| {:<10} | {:>11} | {:>12}  |".format("Quantity", "Price/Item", "Price")))
+        print("|{:^42}|".format("Receipt"))
+        print("|{:^42}|".format(datetime.datetime.now().strftime("%m/%d/%Y")))
+        print("|{:^42}|".format(datetime.datetime.now().strftime("%I:%M:%S%p")))
+        print("=" * len("| {1:<10} | {0:<11} | {2:<12}  |".format("Quantity", "Price/Item", "Price")))
+        print("| {0:<40} |  \n| {2:<10} | {1:>11} | {3:>12}  |".format("Item", "Quantity", "Price/Item", "Price"))
+        print("=" * len("| {1:<10} | {0:<11} | {2:<12}  |".format("Quantity", "Price/Item", "Price")))
         for i in range(0, len(self.thing)):
-            print("| {:<40} |  \n| {:<10} | ${:<10,.2f} | ${:<12,.2f} |"
-                  .format(self.thing[i], self.number[i], self.price[i], self.total_price[i]))
-        print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
+            print("| {0:<40} |  \n| {2:<10} | {1:>11} | {3:>13} |"
+                  .format(self.thing[i],
+                          self.number[i],
+                          Money(self.price[i], "USD").format("en_US"),
+                          Money(self.total_price[i], "USD").format("en_US")))
+        print("=" * len("| {1:<10} | {0:>11} | {2:>12}  |".format("Quantity", "Price/Item", "Price")))
 
         # Gotta clean this disaster up :'(
-        print(" Number of Items: {}\n "
-              "Subtotal: ${:,.2f}\n "
-              "Sales Tax: ${:,.2f}\n "
-              "Total Price: ${:,.2f}"
+        print("| {1:<20}{5:>20} |\n"
+              "| {2:<20}{6:>20} |\n"
+              "| {3:<20}{7:>20} |\n"
+              "| {4:<20}{8:>20} |"
               .format(sum(self.number),
-                      sum(self.total_price),
-                      sum(self.total_price) * self.sales_tax,
-                      sum(self.total_price) + sum(self.total_price) * self.sales_tax))
+                      "Number of Items: ",
+                      "Subtotal: ",
+                      "Sales Tax: ",
+                      "Total Price: ",
+                      sum(self.number),
+                      Money(sum(self.total_price), "USD").format('en_US'),
+                      Money((sum(self.total_price) * self.sales_tax), "USD").format('en_US'),
+                      Money(sum(self.total_price) * (1 + self.sales_tax), "USD").format('en_US')))
 
 
 def main():
@@ -70,11 +81,24 @@ def main():
         quantity = float(input("Quantity: "))  # Changed this to float since some things are measured by weight
         value = float(input("Value: "))
         register.add_item(item, quantity, value)
-        keep_going = input("Keep going?: ")
+        keep_going = input("Keep going?: ").lower()
         if keep_going == "n":
             print()
             register.printout()
-            print(" Change: ${:,.2f}".format(register.payment(float(input(" Payment Amount: ")))))
+            default = sys.stdout
+            receipt_printout = open("receipt.txt", "w")
+            sys.stdout = default
+            payment_amount = float(input("| Payment Amount:                   $"))
+            print("| {0:<20}{1:>20} |".format("Change:", Money(register.payment(payment_amount), "USD").format('en_US')))
+            print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
+            sys.stdout = receipt_printout
+            register.printout()
+            print("| {0:<20}{1:>20} |".format("Payment Amount:", Money(payment_amount, "USD").format('en_US')))
+            print("| {0:<20}{1:>20} |".format("Change:", Money(register.payment(payment_amount), "USD").format('en_US')))
+            print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
+            sys.stdout = default
+            receipt_printout.close()
+            webbrowser.open("receipt.txt")
             break
 
 
