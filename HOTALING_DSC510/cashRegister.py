@@ -1,11 +1,12 @@
 # DSC 510
 # Week 10
-# Programming Assignment Week 10
+# Programming Assignment 10.1
 # Author: Michael Hotaling
-# 07/06/2020
+# 08/03/2020
 
 
 import datetime
+
 
 # This is definitely a stupid way to do this, but it'll work for now
 # Let me see if I can add all this info to a dictionary instead. Maybe I can figure out how ot use 3 key values?
@@ -36,24 +37,30 @@ class CashRegister(object):
         return self.sales_tax
 
     def payment(self, payment_amount):
-        self.amount = payment_amount - sum(self.total_price)
+        self.amount = payment_amount - (sum(self.total_price) + (sum(self.total_price) * self.sales_tax))
         return self.amount
 
     def printout(self):
         print("Receipt")
         date = datetime.datetime.now()
         print(str(date))
-        print("--------")
-        print("Item |  \n    Quantity | Price per Unit | Total Price")
+        print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
+        print("| {:<40} |  \n| {:<10} | {:<10}  | {:<12}  |".format("Item", "Quantity", "Price/Item", "Price"))
+        print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
         for i in range(0, len(self.thing)):
-            print(str(self.thing[i]) + "  \n    " + str(self.number[i]) + " | " + str(self.price[i]) + " | " + str(
-                self.total_price[i]))
-        print()
+            print("| {:<40} |  \n| {:<10} | ${:<10,.2f} | ${:<12,.2f} |"
+                  .format(self.thing[i], self.number[i], self.price[i], self.total_price[i]))
+        print("=" * len("| {:<10} | {:<10}  | {:<12}  |".format("Quantity", "Price/Item", "Price")))
 
         # Gotta clean this disaster up :'(
-        print(" Number of items: " + str(int(sum(self.number))) + "\n Sub Total: " + str(sum(self.total_price)) + "\n "
-            "Sales Tax: " + str(sum(self.total_price) * self.sales_tax) + "\n Total Price: " + str(sum(self.total_price)
-            + (sum(self.total_price) * self.sales_tax)))
+        print(" Number of Items: {}\n "
+              "Subtotal: ${:,.2f}\n "
+              "Sales Tax: ${:,.2f}\n "
+              "Total Price: ${:,.2f}"
+              .format(sum(self.number),
+                      sum(self.total_price),
+                      sum(self.total_price) * self.sales_tax,
+                      sum(self.total_price) + sum(self.total_price) * self.sales_tax))
 
 
 def main():
@@ -67,7 +74,7 @@ def main():
         if keep_going == "n":
             print()
             register.printout()
-            print(" Change: " + str(register.payment(float(input(" Payment Amount: ")))))
+            print(" Change: ${:,.2f}".format(register.payment(float(input(" Payment Amount: ")))))
             break
 
 
