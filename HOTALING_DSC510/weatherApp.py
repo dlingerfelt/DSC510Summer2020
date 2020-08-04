@@ -32,23 +32,18 @@ def get_config():
                   config['openweathermap']['base_url'])
 
 
-# function to request for weather data
+# Function to request weather data from the API
 def get_weather_data(query, config):
     # try-except block
     try:
         api_key = config.api_key
         base_url = config.base_url
         complete_url = "{}{}&appid={}".format(base_url, query, api_key)
-        # print(complete_url)
         # get the API value into response
         response = requests.get(complete_url)
 
-        # This returns an HTTPError if an error occurred during the retrieval process
-        # TODO // Enable this back eventually
-        # response.raise_for_status()
-
         # if status code 200 is successfully received the data from API
-        print("Response status code:" + str(response.status_code))
+        print("Response status code: " + str(response.status_code))
         if response.status_code == 200:
             print("API Request Successful")
             return response.json()
@@ -80,8 +75,29 @@ def display_results(weathers, weather_data):
                        " {9:>10} | {10:>15} |   {11:>15} |" \
             .format('Date', 'Temp', 'Feels Like', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Weather',
                     'Description', 'Wind Speed', 'Wind Direction', 'Cloud Coverage')
-
-        if weather_data == "2":
+        # Current Weather details
+        if weather_data == "1":
+            print("Location : " + (weathers['name']) + ", " + (weathers['sys']['country']))
+            print("-" * len(header_block))
+            print(header_block)
+            print("-" * len(header_block))
+            print(
+                "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} | {8:<25} |"
+                " {9:>10.2f} | {10:>15} |  {11:>15}% |".format(str(
+                            datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
+                            weathers['main']['temp'],
+                            weathers['main']['feels_like'],
+                            weathers["main"]["temp_min"],
+                            weathers["main"]["temp_max"],
+                            weathers['main']['pressure'],
+                            weathers['main']['humidity'],
+                            weathers['weather'][0]['main'],
+                            weathers['weather'][0]['description'],
+                            weathers['wind']['speed'],
+                            weathers['wind']['deg'],
+                            weathers['clouds']['all']))
+            print("-" * len(header_block))
+        elif weather_data == "2":
             print("Location : " + (weathers['city']['name']) + ", " + (weathers['city']['country']))
             print("-" * len(header_block))
             print(header_block)
@@ -103,34 +119,8 @@ def display_results(weathers, weather_data):
                                 i['wind']['deg'],  # 10
                                 i['clouds']['all']))  # 11
             print("-" * len(header_block))
-        # Current Weather details
-        elif weather_data == "1":
-            print("Location : " + (weathers['name']) + ", " + (weathers['sys']['country']))
-            print("-" * len(header_block))
-            print(header_block)
-            print("-" * len(header_block))
-            print(
-                "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} | {8:<25} |"
-                " {9:>10.2f} | {10:>15} |  {11:>15}% |".format(str(
-                            datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
-                            weathers['main']['temp'],
-                            weathers['main']['feels_like'],
-                            weathers["main"]["temp_min"],
-                            weathers["main"]["temp_max"],
-                            weathers['main']['pressure'],
-                            weathers['main']['humidity'],
-                            weathers['weather'][0]['main'],
-                            weathers['weather'][0]['description'],
-                            weathers['wind']['speed'],
-                            weathers['wind']['deg'],
-                            weathers['clouds']['all']))
-            print("-" * len(header_block))
-        else:
-            print("Invalid Entry")
-    except HTTPError:
-        print("Unable to get weather information for the input city/zip-code. Please try again!")
-    except:
-        print("Please try again!")
+    except TypeError:
+        pass
 
 
 def config_editor(make_change):
@@ -246,12 +236,17 @@ def main():
                     query = "{}?q={},{}&units={}&lang={}&cnt={}" \
                         .format(weather_option, location, country, units, language, counter)
                 weather_data = get_weather_data(query, config)
-                display_results(weather_data, str(user_selection))
+                if not weather_data:
+                    # If nothing is returned due to an invalid request, we will just exit back to
+                    # the main program
+                    pass
+                else:
+                    display_results(weather_data, str(user_selection))
 
             elif user_selection == "3":
                 print()
-                make_change = input("Configuration: \n 1: units: ({0}) \n 2: country: ({1})\n 3: language: "
-                                    "({2})\n 4: API Key: ({3})\n Please select the config you wish to change: "
+                make_change = input("Configuration: \n 1: units: {0} \n 2: country: {1}\n 3: language: "
+                                    "{2}\n 4: API Key: {3}\n Please select the config you wish to change: "
                                     .format(units, country, language, api_key))
                 config_editor(make_change)
                 config = get_config()
@@ -261,6 +256,7 @@ def main():
                 api_key = config.api_key
 
             elif user_selection == "4":
+                print("Thank you for using the Weather App!")
                 print("Goodbye")
                 exit()
             else:
