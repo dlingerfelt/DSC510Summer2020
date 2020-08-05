@@ -145,11 +145,15 @@ def main():
                 register.append_logs()
                 break
         print()
-        if input("More Transactions? [y/n]: ").lower != "n":
-            pass
-        else:
-            print("Thanks for using the Cash Register App!")
-            exit()
+        while True:
+            user_continue = input("More Transactions? [y/n]: ")
+            if user_continue.lower() == "n":
+                print("Thanks for using the Cash Register App!")
+                exit()
+            elif user_continue.lower() == 'y':
+                break
+            else:
+                print("Invalid Entry")
 
 
 if __name__ == "__main__":
