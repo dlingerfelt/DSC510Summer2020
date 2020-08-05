@@ -2,7 +2,7 @@
 # Week 10
 # Programming Assignment 10.1
 # Author: Michael Hotaling
-# 08/03/2020
+# 08/05/2020
 
 
 import datetime
@@ -74,9 +74,10 @@ class CashRegister(object):
         # Also, it'd be a good idea to create an inventory system to know how many items we have on hand.
         with open("log_book.txt", "a+") as log_book:
             if os.stat("log_book.txt").st_size == 0:
-                log_book.write("Date,Net Income,Sales Tax, Total Payment\n")
-
-            log_book.write("{},{},{},{}\n".format(
+                log_book.write("-" * 71 + "\n" )
+                log_book.write("| {:<20} | {:>12} | {:>12} | {:>14} |\n".format("Date", "Net Income", "Sales Tax", "Total Payment"))
+                log_book.write("-" * 71 + "\n" )
+            log_book.write("| {:<20} | {:>12} | {:>12} | {:>14} |\n".format(
                 datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
                 Money(sum(self.total_price), "USD").format('en_US'),
                 Money((sum(self.total_price) * self.sales_tax), "USD").format('en_US'),
@@ -111,6 +112,8 @@ def main():
             # To avoid redundant code, I'm going to use that trick I discovered in Week 8 to save outputs of the
             # receipts
             default = sys.stdout
+            if not os.path.isdir("receipts"):
+                os.mkdir("receipts")
             receipt_name = "receipts\\{}.txt".format(datetime.datetime.now().strftime("%Y%m%dT%H%M%S"))
             receipt_printout = open(receipt_name, "w")
             sys.stdout = default
