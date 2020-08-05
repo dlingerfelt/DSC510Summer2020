@@ -2,7 +2,7 @@
 # Week 10
 # Programming Assignment Week 10: Final Project
 # Author: Michael Hotaling
-# 07/31/2020
+# 08/05/2020
 
 
 import requests
@@ -32,15 +32,19 @@ def get_config():
                   config['openweathermap']['base_url'])
 
 
-# Function to request weather data from the API
+# function to request for weather data
 def get_weather_data(query, config):
     # try-except block
-    try:
+    try:  # TODO This try block should never activate. Need to test. 
         api_key = config.api_key
         base_url = config.base_url
         complete_url = "{}{}&appid={}".format(base_url, query, api_key)
         # get the API value into response
+        # print(complete_url)
         response = requests.get(complete_url)
+        # Reactivating response.raise_for_status() should make the messy code below go away
+        # but it won't give those customized responses
+        # response.raise_for_status()
 
         # if status code 200 is successfully received the data from API
         print("Response status code: " + str(response.status_code))
@@ -67,57 +71,87 @@ def get_weather_data(query, config):
 
 
 # function to display results from Json
-def display_results(weathers, weather_data):
+def display_results(weather, weather_data):
     # try-except block
-    try:
+    try:  # TODO This try block should never activate, so it should be removed.
         # Looping the weathers list of JSON objects to print the weather details for the selected range
         header_block = "| {0:<21} | {1:>8} | {2:>11} | {3:>8} | {4:>8} | {5:>8} |  {6:>9} | {7:<15} | {8:<25} |" \
                        " {9:>10} | {10:>15} |   {11:>15} |" \
-            .format('Date', 'Temp', 'Feels Like', 'Temp Min', 'Temp Max', 'Pressure', 'Humidity', 'Weather',
-                    'Description', 'Wind Speed', 'Wind Direction', 'Cloud Coverage')
+            .format('Local Time',
+                    'Temp',
+                    'Feels Like',
+                    'Temp Min',
+                    'Temp Max',
+                    'Pressure',
+                    'Humidity',
+                    'Weather',
+                    'Description',
+                    'Wind Speed',
+                    'Wind Direction',
+                    'Cloud Coverage')
         # Current Weather details
         if weather_data == "1":
-            print("Location : " + (weathers['name']) + ", " + (weathers['sys']['country']))
+            print()
+            time_at_location = weather['dt']
+            time_zone_at_location = weather['timezone']
+            time_at_location += time_zone_at_location
+            print('-' * 36)
+            print("| Location   : {:<19} |".format((weather['name'] + ", " + (weather['sys']['country']))))
+            print("| Local Time : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(time_at_location))))
+            print("| Sunrise    : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['sys']['sunrise'] +
+                                                                                          time_zone_at_location))))
+            print("| Sunset     : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['sys']['sunset'] +
+                                                                                          time_zone_at_location))))
             print("-" * len(header_block))
             print(header_block)
             print("-" * len(header_block))
             print(
                 "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} | {8:<25} |"
                 " {9:>10.2f} | {10:>15} |  {11:>15}% |".format(str(
-                            datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
-                            weathers['main']['temp'],
-                            weathers['main']['feels_like'],
-                            weathers["main"]["temp_min"],
-                            weathers["main"]["temp_max"],
-                            weathers['main']['pressure'],
-                            weathers['main']['humidity'],
-                            weathers['weather'][0]['main'],
-                            weathers['weather'][0]['description'],
-                            weathers['wind']['speed'],
-                            weathers['wind']['deg'],
-                            weathers['clouds']['all']))
+                    datetime.datetime.utcfromtimestamp(time_at_location)),
+                    weather['main']['temp'],
+                    weather['main']['feels_like'],
+                    weather["main"]["temp_min"],
+                    weather["main"]["temp_max"],
+                    weather['main']['pressure'],
+                    weather['main']['humidity'],
+                    weather['weather'][0]['main'],
+                    weather['weather'][0]['description'],
+                    weather['wind']['speed'],
+                    weather['wind']['deg'],
+                    weather['clouds']['all']))
             print("-" * len(header_block))
         elif weather_data == "2":
-            print("Location : " + (weathers['city']['name']) + ", " + (weathers['city']['country']))
+            timezone = weather['city']['timezone']
+            print()
+            local_time = datetime.datetime.utcfromtimestamp(
+                round(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).timestamp() + timezone, 0))
+            print('-' * 36)
+            print("| Location   : {:<19} |".format((weather['city']['name']) + ", " + (weather['city']['country'])))
+            print("| Local Time : {:<19} |".format(str(local_time)))
+            print("| Sunrise    : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['city']['sunrise'] +
+                                                                                          timezone))))
+            print("| Sunset     : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['city']['sunset'] +
+                                                                                          timezone))))
             print("-" * len(header_block))
             print(header_block)
             print("-" * len(header_block))
-            for i in weathers['list']:
+            for i in weather['list']:
                 print(
                     "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} |"
                     " {8:<25} | {9:>10.2f} | {10:>15} |  {11:>15}% |".format(
-                                i["dt_txt"],  # 0
-                                i["main"]["temp"],  # 1
-                                i['main']['feels_like'],  # 2
-                                i["main"]["temp_min"],  # 3
-                                i["main"]["temp_max"],  # 4
-                                i['main']['pressure'],  # 5
-                                i['main']['humidity'],  # 6
-                                i['weather'][0]['main'],  # 7
-                                i['weather'][0]['description'],  # 8
-                                i['wind']['speed'],  # 9
-                                i['wind']['deg'],  # 10
-                                i['clouds']['all']))  # 11
+                        str(datetime.datetime.utcfromtimestamp(i["dt"] + timezone)),  # 0
+                        i["main"]["temp"],  # 1
+                        i['main']['feels_like'],  # 2
+                        i["main"]["temp_min"],  # 3
+                        i["main"]["temp_max"],  # 4
+                        i['main']['pressure'],  # 5
+                        i['main']['humidity'],  # 6
+                        i['weather'][0]['main'],  # 7
+                        i['weather'][0]['description'],  # 8
+                        i['wind']['speed'],  # 9
+                        i['wind']['deg'],  # 10
+                        i['clouds']['all']))  # 11
             print("-" * len(header_block))
     except TypeError:
         pass
@@ -198,8 +232,9 @@ def config_editor(make_change):
 
 def main():
     # try-except block
+    # TODO This should never activate, so I'll take it out when the time comes
     try:
-        # Fetching Default Parameter Country as US and Units - Imperial from configuration file
+        # Fetching User Parameters from Config File.
         config = get_config()
         units = config.units
         country = config.country
@@ -238,7 +273,7 @@ def main():
                 weather_data = get_weather_data(query, config)
                 if not weather_data:
                     # If nothing is returned due to an invalid request, we will just exit back to
-                    # the main program
+                    # the main program since the error handling is done in the function
                     pass
                 else:
                     display_results(weather_data, str(user_selection))
