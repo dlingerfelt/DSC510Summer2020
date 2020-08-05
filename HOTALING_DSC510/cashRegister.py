@@ -74,9 +74,11 @@ class CashRegister(object):
         # Also, it'd be a good idea to create an inventory system to know how many items we have on hand.
         with open("log_book.txt", "a+") as log_book:
             if os.stat("log_book.txt").st_size == 0:
-                log_book.write("Date,Net Income,Sales Tax, Total Payment\n")
-
-            log_book.write("{},{},{},{}\n".format(
+                log_book.write("-" * 71 + "\n")
+                log_book.write("| {:<20} | {:>12} | {:>12} | {:>14} |\n".format("Date", "Net Income", "Sales Tax",
+                                                                                "Total Payment"))
+                log_book.write("-" * 71 + "\n")
+            log_book.write("| {:<20} | {:>12} | {:>12} | {:>14} |\n".format(
                 datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
                 Money(sum(self.total_price), "USD").format('en_US'),
                 Money((sum(self.total_price) * self.sales_tax), "USD").format('en_US'),
@@ -87,58 +89,67 @@ def main():
     print("Welcome to the Cash Register App")
     print("Please input the item name, followed by the quantity and price per item")
     print()
-    register = CashRegister()
     while True:
-        item = input("Item Name: ")
+        register = CashRegister()
         while True:
-            try:
-                quantity = float(input("Quantity: "))  # Changed this to float since some things are measured by weight
-                break
-            except ValueError:
-                print("Invalid Entry")
-        while True:
-            try:
-                value = float(input("Value of Item: $"))
-                break
-            except ValueError:
-                print("Invalid Entry")
-        register.add_item(item, quantity, value)
-        keep_going = input("Continue? [y/n]: ").lower()
-        if keep_going == "n":
-            print()
-            register.printout()
-
-            # To avoid redundant code, I'm going to use that trick I discovered in Week 8 to save outputs of the
-            # receipts
-            default = sys.stdout
-            receipt_name = "receipts\\{}.txt".format(datetime.datetime.now().strftime("%Y%m%dT%H%M%S"))
-            receipt_printout = open(receipt_name, "w")
-            sys.stdout = default
+            item = input("Item Name: ")
             while True:
                 try:
-                    payment_amount = float(input("| Payment Amount:                   $"))
+                    quantity = float(
+                        input("Quantity: "))  # Changed this to float since some things are measured by weight
                     break
                 except ValueError:
-                    pass
+                    print("Invalid Entry")
+            while True:
+                try:
+                    value = float(input("Value of Item: $"))
+                    break
+                except ValueError:
+                    print("Invalid Entry")
+            register.add_item(item, quantity, value)
+            keep_going = input("Continue? [y/n]: ").lower()
+            if keep_going == "n":
+                print()
+                register.printout()
 
-            # TODO This should be part of the class function, but I'm short on time this week since I'm so busy at work.
-            print("| {0:<20}{1:>20} |".format("Change:",
-                                              Money(register.payment(payment_amount), "USD").format('en_US')))
-            print("=" * 44)
-            sys.stdout = receipt_printout
-            register.printout()
-            print("| {0:<20}{1:>20} |".format("Payment Amount:",
-                                              Money(payment_amount, "USD").format('en_US')))
-            print("| {0:<20}{1:>20} |".format("Change:",
-                                              Money(register.payment(payment_amount), "USD").format('en_US')))
-            print("=" * 44)
-            sys.stdout = default
-            receipt_printout.close()
-            webbrowser.open(receipt_name)
-            register.append_logs()
-            break
-    print()
-    print("Please come again soon!")
+                # To avoid redundant code, I'm going to use that trick I discovered in Week 8 to save outputs of the
+                # receipts
+                default = sys.stdout
+                if not os.path.isdir("receipts"):
+                    os.mkdir("receipts")
+                receipt_name = "receipts\\{}.txt".format(datetime.datetime.now().strftime("%Y%m%dT%H%M%S"))
+                receipt_printout = open(receipt_name, "w")
+                sys.stdout = default
+                while True:
+                    try:
+                        payment_amount = float(input("| Payment Amount:                   $"))
+                        break
+                    except ValueError:
+                        pass
+
+                # TODO This should be part of the class function, but I'm short on time this week since I'm so busy
+                #  at work.
+                print("| {0:<20}{1:>20} |".format("Change:",
+                                                  Money(register.payment(payment_amount), "USD").format('en_US')))
+                print("=" * 44)
+                sys.stdout = receipt_printout
+                register.printout()
+                print("| {0:<20}{1:>20} |".format("Payment Amount:",
+                                                  Money(payment_amount, "USD").format('en_US')))
+                print("| {0:<20}{1:>20} |".format("Change:",
+                                                  Money(register.payment(payment_amount), "USD").format('en_US')))
+                print("=" * 44)
+                sys.stdout = default
+                receipt_printout.close()
+                webbrowser.open(receipt_name)
+                register.append_logs()
+                break
+        print()
+        if input("More Transactions? [y/n]: ").lower != "n":
+            pass
+        else:
+            print("Thanks for using the Cash Register App!")
+            exit()
 
 
 if __name__ == "__main__":
