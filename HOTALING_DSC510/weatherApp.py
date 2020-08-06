@@ -2,7 +2,7 @@
 # Week 10
 # Programming Assignment Week 10: Final Project
 # Author: Michael Hotaling
-# 08/05/2020
+# 08/06/2020
 
 
 import requests
@@ -32,26 +32,22 @@ def get_config():
                   config['openweathermap']['base_url'])
 
 
-# function to request for weather data
+# Function to request weather data from the API
 def get_weather_data(query, config):
+    complete_url = "{}{}&appid={}".format(config.base_url, query, config.api_key)
+    response = requests.get(complete_url)
     # try-except block
-    try:  # TODO This try block should never activate. Need to test. 
-        api_key = config.api_key
-        base_url = config.base_url
-        complete_url = "{}{}&appid={}".format(base_url, query, api_key)
+    try:
         # get the API value into response
         # print(complete_url)
-        response = requests.get(complete_url)
-        # Reactivating response.raise_for_status() should make the messy code below go away
-        # but it won't give those customized responses
-        # response.raise_for_status()
-
-        # if status code 200 is successfully received the data from API
-        print("Response status code: " + str(response.status_code))
+        response.raise_for_status()
         if response.status_code == 200:
             print("API Request Successful")
-            return response.json()
-        elif response.status_code == 400:
+        return response.json()
+    # Exception Handling
+    except HTTPError:
+        print("Response status code: " + str(response.status_code))
+        if response.status_code == 400:
             print("Syntax Error!")
         # if status code 404 is received from the API
         elif response.status_code == 404:
@@ -61,100 +57,97 @@ def get_weather_data(query, config):
             print("Invalid API Key. Please update your API key.")
         elif response.status_code == 429:
             print("Your account is temporary blocked due to exceeding of requests limitation of your subscription type")
-        # convert response details into json response as JSON format
-
-    # Exception Handling
-    except HTTPError as httperror:
-        print(httperror)
-    except Exception as error:
-        print(error)
+        else:
+            print("An unknown error has occurred. Please try again later!")
 
 
-# function to display results from Json
+# Function to display results from JSON
 def display_results(weather, weather_data):
     # try-except block
-    try:  # TODO This try block should never activate, so it should be removed.
-        # Looping the weathers list of JSON objects to print the weather details for the selected range
-        header_block = "| {0:<21} | {1:>8} | {2:>11} | {3:>8} | {4:>8} | {5:>8} |  {6:>9} | {7:<15} | {8:<25} |" \
-                       " {9:>10} | {10:>15} |   {11:>15} |" \
-            .format('Local Time',
-                    'Temp',
-                    'Feels Like',
-                    'Temp Min',
-                    'Temp Max',
-                    'Pressure',
-                    'Humidity',
-                    'Weather',
-                    'Description',
-                    'Wind Speed',
-                    'Wind Direction',
-                    'Cloud Coverage')
-        # Current Weather details
-        if weather_data == "1":
-            print()
-            time_at_location = weather['dt']
-            time_zone_at_location = weather['timezone']
-            time_at_location += time_zone_at_location
-            print('-' * 36)
-            print("| Location   : {:<19} |".format((weather['name'] + ", " + (weather['sys']['country']))))
-            print("| Local Time : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(time_at_location))))
-            print("| Sunrise    : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['sys']['sunrise'] +
-                                                                                          time_zone_at_location))))
-            print("| Sunset     : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['sys']['sunset'] +
-                                                                                          time_zone_at_location))))
-            print("-" * len(header_block))
-            print(header_block)
-            print("-" * len(header_block))
+    # Looping the weather list of JSON objects to print the weather details for the selected range
+    header_block = "| {0:<21} | {1:>8} | {2:>11} | {3:>8} | {4:>8} | {5:>8} |  {6:>9} | {7:<15} | {8:<25} |" \
+                   " {9:>10} | {10:>15} |   {11:>15} |" \
+        .format('Local Time',
+                'Temp',
+                'Feels Like',
+                'Temp Min',
+                'Temp Max',
+                'Pressure',
+                'Humidity',
+                'Weather',
+                'Description',
+                'Wind Speed',
+                'Wind Direction',
+                'Cloud Coverage')
+    # Current Weather Details
+    if weather_data == "1":
+        print()
+        time_at_location = weather['dt']
+        time_zone_at_location = weather['timezone']
+        time_at_location += time_zone_at_location
+        print('-' * 36)
+        print("| Location   : {:<19} |".format((weather['name'] + ", " + (weather['sys']['country']))))
+        print("| Local Time : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(time_at_location))))
+        print("| Sunrise    : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['sys']['sunrise'] +
+                                                                                      time_zone_at_location))))
+        print("| Sunset     : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['sys']['sunset'] +
+                                                                                      time_zone_at_location))))
+        print("| Query      : {:<19} |".format(str("Current Weather")))
+        print("-" * len(header_block))
+        print(header_block)
+        print("-" * len(header_block))
+        print(
+            "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} | {8:<25} |"
+            " {9:>10.2f} | {10:>15} |  {11:>15}% |".format(str(
+                datetime.datetime.utcfromtimestamp(time_at_location)),
+                weather['main']['temp'],
+                weather['main']['feels_like'],
+                weather["main"]["temp_min"],
+                weather["main"]["temp_max"],
+                weather['main']['pressure'],
+                weather['main']['humidity'],
+                weather['weather'][0]['main'],
+                weather['weather'][0]['description'],
+                weather['wind']['speed'],
+                weather['wind']['deg'],
+                weather['clouds']['all']))
+        print("-" * len(header_block))
+
+    # Forecast Weather Details
+    elif weather_data == "2":
+        timezone = weather['city']['timezone']
+        print()
+        local_time = datetime.datetime.utcfromtimestamp(
+            round(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).timestamp() + timezone, 0))
+        print('-' * 36)
+        print("| Location   : {:<19} |".format((weather['city']['name']) + ", " + (weather['city']['country'])))
+        print("| Local Time : {:<19} |".format(str(local_time)))
+        print("| Sunrise    : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['city']['sunrise'] +
+                                                                                      timezone))))
+        print("| Sunset     : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['city']['sunset'] +
+                                                                                      timezone))))
+        print("| Query      : {:<19} |".format(str("Weather Forecast")))
+        print("-" * len(header_block))
+        print(header_block)
+        print("-" * len(header_block))
+        # Iteratively go through the list that the JSON provides
+        for i in weather['list']:
             print(
-                "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} | {8:<25} |"
-                " {9:>10.2f} | {10:>15} |  {11:>15}% |".format(str(
-                    datetime.datetime.utcfromtimestamp(time_at_location)),
-                    weather['main']['temp'],
-                    weather['main']['feels_like'],
-                    weather["main"]["temp_min"],
-                    weather["main"]["temp_max"],
-                    weather['main']['pressure'],
-                    weather['main']['humidity'],
-                    weather['weather'][0]['main'],
-                    weather['weather'][0]['description'],
-                    weather['wind']['speed'],
-                    weather['wind']['deg'],
-                    weather['clouds']['all']))
-            print("-" * len(header_block))
-        elif weather_data == "2":
-            timezone = weather['city']['timezone']
-            print()
-            local_time = datetime.datetime.utcfromtimestamp(
-                round(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).timestamp() + timezone, 0))
-            print('-' * 36)
-            print("| Location   : {:<19} |".format((weather['city']['name']) + ", " + (weather['city']['country'])))
-            print("| Local Time : {:<19} |".format(str(local_time)))
-            print("| Sunrise    : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['city']['sunrise'] +
-                                                                                          timezone))))
-            print("| Sunset     : {:<19} |".format(str(datetime.datetime.utcfromtimestamp(weather['city']['sunset'] +
-                                                                                          timezone))))
-            print("-" * len(header_block))
-            print(header_block)
-            print("-" * len(header_block))
-            for i in weather['list']:
-                print(
-                    "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} |"
-                    " {8:<25} | {9:>10.2f} | {10:>15} |  {11:>15}% |".format(
-                        str(datetime.datetime.utcfromtimestamp(i["dt"] + timezone)),  # 0
-                        i["main"]["temp"],  # 1
-                        i['main']['feels_like'],  # 2
-                        i["main"]["temp_min"],  # 3
-                        i["main"]["temp_max"],  # 4
-                        i['main']['pressure'],  # 5
-                        i['main']['humidity'],  # 6
-                        i['weather'][0]['main'],  # 7
-                        i['weather'][0]['description'],  # 8
-                        i['wind']['speed'],  # 9
-                        i['wind']['deg'],  # 10
-                        i['clouds']['all']))  # 11
-            print("-" * len(header_block))
-    except TypeError:
-        pass
+                "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} |"
+                " {8:<25} | {9:>10.2f} | {10:>15} |  {11:>15}% |".format(
+                    str(datetime.datetime.utcfromtimestamp(i["dt"] + timezone)),  # 0
+                    i["main"]["temp"],  # 1
+                    i['main']['feels_like'],  # 2
+                    i["main"]["temp_min"],  # 3
+                    i["main"]["temp_max"],  # 4
+                    i['main']['pressure'],  # 5
+                    i['main']['humidity'],  # 6
+                    i['weather'][0]['main'],  # 7
+                    i['weather'][0]['description'],  # 8
+                    i['wind']['speed'],  # 9
+                    i['wind']['deg'],  # 10
+                    i['clouds']['all']))  # 11
+        print("-" * len(header_block))
 
 
 def config_editor(make_change):
@@ -175,7 +168,8 @@ def config_editor(make_change):
             print("Invalid Entry")
 
     elif make_change == "2":
-        new_country = input("Please select a country using a two character country code: ").upper()[0:2]
+        new_country = input("Please select a country using a two character country code: ").upper()
+        # This is probably a dumb way to do this, but oh well!
         if new_country not in ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ',
                                'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BQ', 'BA', 'BW', 'BV',
                                'BR', 'IO', 'BN', 'BG', 'BF', 'BI', 'CV', 'KH', 'CM', 'CA', 'KY', 'CF', 'TD', 'CL', 'CN',
@@ -199,18 +193,23 @@ def config_editor(make_change):
 
     elif make_change == "3":
         # https://openweathermap.org/current#multi
-        language = input("Please select a language using a two character language code: ").upper()[0:2]
+        language = input("The full list of languages can be found here:\nhttps://openweathermap.org/current#multi "
+                         "\nPlease select a language: ").upper()
 
     elif make_change == "4":
         api_key_new = input("Please enter a new API key: ")
         complete_url = "{}weather?zip={},{}&appid={}".format(config.base_url, "11210", "US", api_key_new)
         response = requests.get(complete_url)
-        if response.status_code == 200:
-            print("Successfully connected to the API")
-            api_key = api_key_new
-        elif response.status_code == 401:
-            print("Invalid API key. Please try again!")
-
+        try:
+            response.raise_for_status()
+            if response.status_code == 200:
+                print("Successfully connected to the API")
+                api_key = api_key_new
+        except HTTPError:
+            if response.status_code == 401:
+                print("Invalid API key. Please try again!")
+            else:
+                print("Another error has occurred")
     else:
         pass
     if language == config.language \
@@ -231,76 +230,77 @@ def config_editor(make_change):
 
 
 def main():
-    # try-except block
-    # TODO This should never activate, so I'll take it out when the time comes
-    try:
-        # Fetching User Parameters from Config File.
-        config = get_config()
-        units = config.units
-        country = config.country
-        language = config.language
-        api_key = config.api_key
-        counter = 1
-        now = datetime.datetime.now()
+    # Fetching User Parameters from Config File.
+    config = get_config()
+    units = config.units
+    country = config.country
+    language = config.language
+    api_key = config.api_key
+    counter = 1
+    now = datetime.datetime.now()
+    print()
+    print("Welcome to the Weather App")
+    print("Today is {0}".format(now.strftime("%A, %B %d, %Y")))
+    print("The Time is currently {0}".format(now.strftime("%I:%M%p")))
+    print("-" * 30)
+    while True:
         print()
-        print("Welcome to the Weather App")
-        print("Today is {0}".format(now.strftime("%A, %B %d, %Y")))
-        print("The Time is currently {0}".format(now.strftime("%I:%M%p")))
-        print("-" * 30)
-        while True:
-            print()
-            user_selection = input("Main Menu:\n "
-                                   "1: Pull the current weather for a city or ZIP code\n "
-                                   "2: Pull forecast data for a city or ZIP code\n "
-                                   "3: Edit configuration\n "
-                                   "4: Exit\n"
-                                   "Please input a selection: ")
-            if user_selection in ["1", "2"]:
-                if user_selection == "1":
-                    weather_option = "weather"
-                else:
-                    counter = input("How much data would you like to pull? [3hr blocks]: ")
-                    weather_option = "forecast"
-                location = input("Please input a city name or ZIP code: ")
-
-                if location.isdigit() and len(location) == 5:  # If it is a ZIP code
-                    query = "{}?zip={},{}&units={}&lang={}&cnt={}" \
-                        .format(weather_option, location, country, units, language, counter)
-
-                else:  # If it is a city name
-                    query = "{}?q={},{}&units={}&lang={}&cnt={}" \
-                        .format(weather_option, location, country, units, language, counter)
-                weather_data = get_weather_data(query, config)
-                if not weather_data:
-                    # If nothing is returned due to an invalid request, we will just exit back to
-                    # the main program since the error handling is done in the function
-                    pass
-                else:
-                    display_results(weather_data, str(user_selection))
-
-            elif user_selection == "3":
-                print()
-                make_change = input("Configuration: \n 1: units: {0} \n 2: country: {1}\n 3: language: "
-                                    "{2}\n 4: API Key: {3}\n Please select the config you wish to change: "
-                                    .format(units, country, language, api_key))
-                config_editor(make_change)
-                config = get_config()
-                units = config.units
-                country = config.country
-                language = config.language
-                api_key = config.api_key
-
-            elif user_selection == "4":
-                print("Thank you for using the Weather App!")
-                print("Goodbye")
-                exit()
+        user_selection = input("Main Menu:\n "
+                               "1: Pull the current weather for a city or ZIP code\n "
+                               "2: Pull forecast data for a city or ZIP code\n "
+                               "3: Edit configuration\n "
+                               "4: Exit\n"
+                               "Please input a selection: ")
+        if user_selection in ["1", "2"]:
+            if user_selection == "1":
+                weather_option = "weather"
             else:
-                print("Invalid Request: Please try again")
+                while True:
+                    try:
+                        counter = int(input("How much data would you like to pull? [3hr blocks/40 max]: "))
+                        if 1 <= counter <= 40:
+                            break
+                        else:
+                            print("Please enter a number between 1 and 40 ")
+                    except ValueError:
+                        print("Please input an integer value!")
+                weather_option = "forecast"
+            location = input("Please input a city name or ZIP code: ")
 
-    except ValueError as value_error:
-        print(value_error)
-    except SyntaxError as syntax_error:
-        print(syntax_error)
+            if location.isdigit() and len(location) == 5:  # If it is a ZIP code
+                print("ZIP code detected")
+                query = "{}?zip={},{}&units={}&lang={}&cnt={}" \
+                    .format(weather_option, location, country, units, language, counter)
+
+            else:  # If it is a city name
+                query = "{}?q={},{}&units={}&lang={}&cnt={}" \
+                    .format(weather_option, location, country, units, language, counter)
+            weather_data = get_weather_data(query, config)
+            if not weather_data:
+                # If nothing is returned due to an invalid request, we will just exit back to
+                # the main program since the error handling is done in the function
+                pass
+            else:
+                display_results(weather_data, str(user_selection))
+
+        elif user_selection == "3":
+            print()
+            make_change = input("Configuration: \n 1: units: {0} \n 2: country: {1}\n 3: language: "
+                                "{2}\n 4: API Key: {3}\n Please select the config you wish to change: "
+                                .format(units, country, language, api_key))
+            config_editor(make_change)
+            config = get_config()
+            units = config.units
+            country = config.country
+            language = config.language
+            api_key = config.api_key
+
+        elif user_selection == "4":
+            print("Thank you for using the Weather App!")
+            print("Goodbye")
+            exit()
+        else:
+            print("Invalid Request: Please try again")
 
 
 if __name__ == '__main__':
