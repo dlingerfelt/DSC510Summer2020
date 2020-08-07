@@ -2,7 +2,7 @@
 # Week 10
 # Programming Assignment Week 10: Final Project
 # Author: Michael Hotaling
-# 08/07/2020
+# 08/06/2020
 
 
 import requests
@@ -11,8 +11,8 @@ import configparser
 from requests.exceptions import HTTPError
 
 
+# Class to represent config values (api_key, units, country, language, base URl)
 class Config:
-    # Class to represent config values (api_key, units, country, language, base URl)
     def __init__(self, api_key, units, country, language, base_url):
         self.api_key = api_key
         self.units = units
@@ -21,8 +21,8 @@ class Config:
         self.base_url = base_url
 
 
+# Function to retrieve configuration values from config file
 def get_config():
-    # Function to retrieve configuration values from config file
     config = configparser.ConfigParser()
     config.read('config.ini')
     return Config(config['openweathermap']['api_key'],
@@ -32,9 +32,8 @@ def get_config():
                   config['openweathermap']['base_url'])
 
 
+# Function to request weather data from the API
 def get_weather_data(query, config):
-    # Function to request weather data from the API
-    # We first complete the url by using string concatenation
     complete_url = "{}{}&appid={}".format(config.base_url, query, config.api_key)
     response = requests.get(complete_url)
     # try-except block
@@ -46,37 +45,26 @@ def get_weather_data(query, config):
             print("API Request Successful")
         return response.json()
     # Exception Handling
-    # The default HTTPError was pretty boring, so I added custom errors based on what the user might get back
-    except HTTPError as http_error:
+    except HTTPError:
         print("Response status code: " + str(response.status_code))
-
-        # Error Code 400:  I'm pretty sure this will never return because I idiot proofed everything, but i left it in
         if response.status_code == 400:
             print("Syntax Error!")
-
-        # Error Code 404: This should return if the city or ZIP code entered isn't found.
+        # if status code 404 is received from the API
         elif response.status_code == 404:
             print("Unable to find location: Please try again")
-
-        # Error Code 401: This should return if the API key in the config.ini file is invalid
+        # if status code 401 is received from the API
         elif response.status_code == 401:
             print("Invalid API Key. Please update your API key.")
-
-        # Error Code 429: This is a temporary ban from the API. I never actually tested this one since I didn't wanna
-        # lose my key.
         elif response.status_code == 429:
             print("Your account is temporary blocked due to exceeding of requests limitation of your subscription type")
-
-        # This is a catch all for any other errors. eg server goes down or user gets disconnected from the internet.
         else:
-            print(http_error)
             print("An unknown error has occurred. Please try again later!")
 
 
+# Function to display results from JSON
 def display_results(weather, weather_data):
-    # Function to display results from JSON
-    # I declared the header block variable because I kept changing it and needed to adjust the formatting of the
-    # grids I like so much. I instead just pull the length of the header instead which is much easier
+    # try-except block
+    # Looping the weather list of JSON objects to print the weather details for the selected range
     header_block = "| {0:<21} | {1:>8} | {2:>11} | {3:>8} | {4:>8} | {5:>8} |  {6:>9} | {7:<15} | {8:<25} |" \
                    " {9:>10} | {10:>15} |   {11:>15} |" \
         .format('Local Time',
@@ -94,8 +82,6 @@ def display_results(weather, weather_data):
     # Current Weather Details
     if weather_data == "1":
         print()
-        # The JSON returned has the unix timestamp in UTC time. We will need to add the timezone change to that
-        # and then convert the unix timestamp into a human readable version.
         time_at_location = weather['dt']
         time_zone_at_location = weather['timezone']
         time_at_location += time_zone_at_location
@@ -110,8 +96,6 @@ def display_results(weather, weather_data):
         print("-" * len(header_block))
         print(header_block)
         print("-" * len(header_block))
-
-        # Weather information is here
         print(
             "| {0:<21} | {1:>8.2f} | {2:>11.2f} | {3:>8.2f} | {4:>8.2f} | {5:>8} | {6:>9}% | {7:<15} | {8:<25} |"
             " {9:>10.2f} | {10:>15} |  {11:>15}% |".format(str(
@@ -130,7 +114,6 @@ def display_results(weather, weather_data):
         print("-" * len(header_block))
 
     # Forecast Weather Details
-    # Same as the above, but the JSON returns the data slightly differently.
     elif weather_data == "2":
         timezone = weather['city']['timezone']
         print()
@@ -167,17 +150,12 @@ def display_results(weather, weather_data):
         print("-" * len(header_block))
 
 
-def config_editor(make_change, config):
-    # Here is some logic to help a user pick the settings they want
-    # I've tried to error proof this as much as possible so the user doesn't brick the program
-    # First I assign all the config values to variables since it is easier to compare any changes later.
+def config_editor(make_change):
+    config = get_config()
     api_key = config.api_key
     language = config.language
     country = config.country
     units = config.units
-    # Temperature Setting
-    # This will give the user the option to change the requested temperature units the API returns
-    # The only valid entries are F for imperial, C for metric, and K for Kelvin. Anything else gets rejected
     if make_change == "1":
         temp_setting = input("Please select either F, C, or K: ")
         if temp_setting.lower() == "f":
@@ -189,13 +167,9 @@ def config_editor(make_change, config):
         else:
             print("Invalid Entry")
 
-    # Country Setting
-    # The API is already pretty good at finding which countries the user wants, but sometimes it messes up and returns
-    # the right city, but the wrong country. This setting helps eliminate that by adding the country code to the
-    # city selection criteria. Only supported countries are possible entries to prevent the program from breaking.
     elif make_change == "2":
         new_country = input("Please select a country using a two character country code: ").upper()
-        # This is probably a dumb way to do this. Too bad!
+        # This is probably a dumb way to do this, but oh well!
         if new_country not in ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ',
                                'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BQ', 'BA', 'BW', 'BV',
                                'BR', 'IO', 'BN', 'BG', 'BF', 'BI', 'CV', 'KH', 'CM', 'CA', 'KY', 'CF', 'TD', 'CL', 'CN',
@@ -217,25 +191,11 @@ def config_editor(make_change, config):
         else:
             country = new_country
 
-    # Language selection
-    # The OpenWeather API has several supported languages in their documentation that return the weather description
-    # I set up this selection to return the language options from the URL provided. Only valid languages can be entered
     elif make_change == "3":
         # https://openweathermap.org/current#multi
-        new_language = input("The full list of languages can be found here:\nhttps://openweathermap.org/current#multi "
-                             "\nPlease select a language: ").upper()
-        if new_language not in ['AF', 'AL', 'AR', 'AZ', 'BG', 'CA', 'CZ', 'DA', 'DE', 'EL', 'EN', 'EU', 'FA', 'FI',
-                                'FR', 'GL', 'HE', 'HI', 'HR', 'HU', 'ID', 'IT', 'JA', 'KR', 'LA', 'LT', 'MK', 'NO',
-                                'NL', 'PL', 'PT', 'PT_BR', 'RO', 'RU', 'SV', 'SE', 'SK', 'SL', 'SP', 'ES', 'SR', 'TH',
-                                'TR', 'UA', 'UK', 'VI', 'ZH_CN', 'ZH_TW', 'ZU']:
-            print("Language not found!")
-        else:
-            language = new_language
+        language = input("The full list of languages can be found here:\nhttps://openweathermap.org/current#multi "
+                         "\nPlease select a language: ").upper()
 
-    # API Key Change
-    # If the user wishes to use a different API key, this option can be utilized. To prevent the program from breaking,
-    # the entered API key is first tested by getting a response from the server. If the request is successful, the API
-    # key is saved to the config. It's probably a dumb way to do it, but too bad!
     elif make_change == "4":
         api_key_new = input("Please enter a new API key: ")
         complete_url = "{}weather?zip={},{}&appid={}".format(config.base_url, "11210", "US", api_key_new)
@@ -252,8 +212,6 @@ def config_editor(make_change, config):
                 print("Another error has occurred")
     else:
         pass
-    # This will check to see if any of the settings have been changed. If yes, they will be written to the config file
-    # if no, only a print statement saying that there were no changes made will run
     if language == config.language \
             and country == config.country \
             and units == config.units \
@@ -274,36 +232,33 @@ def config_editor(make_change, config):
 def main():
     # Fetching User Parameters from Config File.
     config = get_config()
-    counter = 1  # This is needed for the current weather API. IDK why.
+    units = config.units
+    country = config.country
+    language = config.language
+    api_key = config.api_key
+    counter = 1
     now = datetime.datetime.now()
-
-    # Greeting the User and displaying the current time and day
     print()
     print("Welcome to the Weather App")
     print("Today is {0}".format(now.strftime("%A, %B %d, %Y")))
     print("The Time is currently {0}".format(now.strftime("%I:%M%p")))
     print("-" * 30)
     while True:
-        # Main Menu
-        # This is where the user will input their desired selection
+        print()
         user_selection = input("Main Menu:\n "
                                "1: Pull the current weather for a city or ZIP code\n "
                                "2: Pull forecast data for a city or ZIP code\n "
                                "3: Edit configuration\n "
                                "4: Exit\n"
                                "Please input a selection: ")
-        # Weather Query
         if user_selection in ["1", "2"]:
             if user_selection == "1":
                 weather_option = "weather"
             else:
                 while True:
                     try:
-                        counter = input("How much data would you like to pull? [3hr blocks/40 max]: ")
-                        if not counter:
-                            counter = 40
-                            break
-                        elif 1 <= int(counter) <= 40:
+                        counter = int(input("How much data would you like to pull? [3hr blocks/40 max]: "))
+                        if 1 <= counter <= 40:
                             break
                         else:
                             print("Please enter a number between 1 and 40 ")
@@ -315,11 +270,11 @@ def main():
             if location.isdigit() and len(location) == 5:  # If it is a ZIP code
                 print("ZIP code detected")
                 query = "{}?zip={},{}&units={}&lang={}&cnt={}" \
-                    .format(weather_option, location, config.country, config.units, config.language, counter)
+                    .format(weather_option, location, country, units, language, counter)
 
             else:  # If it is a city name
                 query = "{}?q={},{}&units={}&lang={}&cnt={}" \
-                    .format(weather_option, location, config.country, config.units, config.language, counter)
+                    .format(weather_option, location, country, units, language, counter)
             weather_data = get_weather_data(query, config)
             if not weather_data:
                 # If nothing is returned due to an invalid request, we will just exit back to
@@ -328,28 +283,24 @@ def main():
             else:
                 display_results(weather_data, str(user_selection))
 
-        # Configuration Menu
         elif user_selection == "3":
             print()
             make_change = input("Configuration: \n 1: units: {0} \n 2: country: {1}\n 3: language: "
                                 "{2}\n 4: API Key: {3}\n Please select the config you wish to change: "
-                                .format(config.units, config.country, config.language, config.api_key))
-            config_editor(make_change, config)
+                                .format(units, country, language, api_key))
+            config_editor(make_change)
             config = get_config()
+            units = config.units
+            country = config.country
+            language = config.language
+            api_key = config.api_key
 
-        # Exit Request
         elif user_selection == "4":
             print("Thank you for using the Weather App!")
             print("Goodbye")
             exit()
-
-        # Easter Eggs
-        elif user_selection == "42":
-            print("The Answer to the Ultimate Question of Life, the Universe, and Everything")
-
         else:
             print("Invalid Request: Please try again")
-        print()
 
 
 if __name__ == '__main__':
